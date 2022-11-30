@@ -1,0 +1,33 @@
+:root {
+    --modal-markdown-block-margin-top: 1.35em;
+}
+
+.markdown-body-modal {
+    color: var(--color-brand-quasi-white)
+}
+
+.markdown-body-modal p:not(:first-child), .markdown-body-modal blockquote:not(:first-child) {
+    margin-top: var(--modal-markdown-block-margin-top);
+}
+
+.markdown-body-modal blockquote:not(:first-child) {
+    color: var(--color-utility-grey);
+    border-left: 3px solid var(--color-brand-navy-light);
+    padding-left: 1em;
+}
+
+.markdown-body-modal a {
+    background-color: transparent;
+    color: var(--color-brand-orange-main);
+    text-decoration: none;
+}
+
+.markdown-body-modal a:active,
+.markdown-body-modal a:hover {
+    color: var(--color-brand-orange-main);
+    outline-width: 0;
+}
+
+.markdown-body-modal a:hover {
+    text-decoration: underline;
+}
