@@ -9,6 +9,9 @@
 
 
 releases:
+  - name: 1.2.0
+    changes:
+      - title: Updated to latest FBW Installer Code
   - name: 1.1.0
     changes:
       - title: Updated to latest FBW Installer Code

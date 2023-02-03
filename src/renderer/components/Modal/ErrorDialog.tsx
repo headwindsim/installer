@@ -5,7 +5,7 @@ import { shell } from "electron";
 import { FragmenterError, FragmenterErrorCode } from "@flybywiresim/fragmenter";
 import { SentrySessionCard } from "renderer/components/SentrySessionCard";
 
-const DISCORD_SUPPORT_URL = 'https://discord.com/channels/738864299392630914/785976111875751956';
+const DISCORD_SUPPORT_URL = 'https://discord.com/channels/965000103150645258/1019643144393994260';
 
 export interface ErrorDialogProps {
     error: Error;
@@ -70,7 +70,7 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ error, onAcknowledge }) => {
                     </div>
 
                     <div className="flex flex-col">
-                        <p>Use this error code to obtain support on <a onClick={handleOpenDiscordSupport}>Discord</a>:</p>
+                        <p>Use this error code to obtain support on <a onClick={handleOpenDiscordSupport}>Headwind Simulations Discord</a>:</p>
 
                         <SentrySessionCard />
                     </div>

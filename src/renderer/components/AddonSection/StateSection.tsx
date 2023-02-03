@@ -220,6 +220,7 @@ const DownloadProgressBanner: FC<DownloadProgressBannerProps> = ({ addon, instal
             progressBarValue = installState.percent;
             break;
         case InstallStatus.DownloadEnding:
+            stateIcon = <Download size={40} className="text-white mr-6"/>;
             stateText = <SmallStateText>Finishing update</SmallStateText>;
             progressBarBg = 'bg-cyan';
             progressBarValue = 100;
