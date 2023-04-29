@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CDN_URL="https://worker.headwindsim.net"
-CDN_PURGE_LINK="https://worker.headwindsim.net/purgeCache?url=https://cdn.headwindsim.net"
+CDN_PURGE_LINK="https://worker.headwindsim.net/purgeCache?url=http://cdn.headwindsim.net"
 CDN_DIR=${1:-"installer/test"}
 LOCAL_DIR=${2:-"./dist"}
 
