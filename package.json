@@ -24,7 +24,7 @@
     "lint:fix": "eslint --fix --ext .ts,.tsx ."
   },
   "keywords": [],
-  "author": "FlyByWire Simulations",
+  "author": "Headwind Simulations",
   "license": "GPL-3.0",
   "build": {
     "extraResources": [
