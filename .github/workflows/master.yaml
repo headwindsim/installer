@@ -7,7 +7,7 @@ jobs:
   build:
     # Prevent running this on forks
     if: github.repository_owner == 'headwindsim'
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     env:
       MAIN_PRE_RELEASE_ID: 101378539
       MAIN_PRE_RELEASE_TAG: vmain
