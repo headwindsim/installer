@@ -51,7 +51,7 @@ export const AboutSettings: FC = () => {
             </div>
 
             <div className="flex flex-col justify-center">
-                <span className="text-2xl">Copyright (c) 2020-2022 FlyByWire Simulations and its contributors</span>
+                <span className="text-2xl">Copyright (c) 2020-2023 FlyByWire Simulations and its contributors</span>
                 <span className="text-2xl">Licensed under the GNU General Public License Version 3</span>
 
                 <span className="text-2xl text-gray-200 mt-4">
