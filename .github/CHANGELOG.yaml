@@ -9,6 +9,11 @@
 
 
 releases:
+- name: 1.3.2
+    changes:
+      - title: Fixes CDN
+        categories: [ Infrastructure ]
+        authors: [ Revyn112 ]
   - name: 1.3.0
     changes:
       - title: Updated to latest FBW Installer Code
