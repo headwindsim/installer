@@ -1,0 +1,64 @@
+name: Release
+on:
+  push:
+    tags:
+      - 'v*'
+      - '!v*-rc*'
+      - '!v*-dev*'
+
+jobs:
+  build:
+    # Prevent running this on forks
+    if: github.repository_owner == 'headwindsim'
+    name: Upload Release Asset
+    runs-on: ubuntu-18.04
+    env:
+      ASSET_PATH: dist/Headwind_Installer_Setup.exe
+      ASSET_DIRECTORY: dist/
+      ASSET_NAME: Headwind_Installer_Setup.exe
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16.9'
+
+      - name: Create .sentrydsn file
+        run: |
+          echo ${{ secrets.SENTRY_DSN_INSTALLER }} >> ./extraResources/.sentrydsn
+
+      - name: Install NPM dependencies
+        run: npm ci
+
+      - name: Install system requirements
+        run: sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install -y wine32 wine64
+
+      - name: Package installer
+        run: |
+          npm run package && rm -rf ./dist/win-unpacked/
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.ASSET_PATH }}
+          asset_name: ${{ env.ASSET_NAME }}
+          asset_content_type: application/x-msdos-program
+
+      - name: Upload to CloudFlare CDN
+        env:
+          CLOUDFLARE_WORKER_PASSWORD: ${{ secrets.CLOUDFLARE_WORKER_PASSWORD }}
+        run: ./scripts/cdn-cf.sh installer/release ./dist && ./scripts/cdn-cf.sh installer/rc ./dist

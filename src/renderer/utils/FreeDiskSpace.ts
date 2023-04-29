@@ -1,4 +1,4 @@
-﻿import { Directories } from "renderer/utils/Directories";
+import { Directories } from "renderer/utils/Directories";
 import fs from 'fs-extra';
 import checkDiskSpace from "check-disk-space";
 
@@ -26,7 +26,7 @@ export class FreeDiskSpace {
                 status: FreeDiskSpaceStatus.Unknown,
             };
         }
-        
+
         let resolvedDestDir = Directories.installLocation();
         let resolvedTempDir = Directories.tempLocation();
 

@@ -146,8 +146,8 @@ const BackgroundServiceBanner: FC<BackgroundServiceBannerProps> = ({ publisher, 
                     <div className="flex gap-x-14 items-center">
                         {(addon.backgroundService.enableAutostartConfiguration ?? true) && (
                             <span
-                            className="flex items-center gap-x-3.5 text-3xl text-quasi-white hover:text-cyan cursor-pointer"
-                            onClick={handleClickAutostart}>
+                                className="flex items-center gap-x-3.5 text-3xl text-quasi-white hover:text-cyan cursor-pointer"
+                                onClick={handleClickAutostart}>
                                 <Gear size={22} />
                                 Autostart...
                             </span>
@@ -275,7 +275,7 @@ const DownloadProgressBanner: FC<DownloadProgressBannerProps> = ({ addon, instal
     // }
 
     let moduleStateText;
-    if (download.module && installState.status !== InstallStatus.DownloadCanceled) {
+    if (download.module && installState.status !== InstallStatus.DownloadCanceled && installState.status !== InstallStatus.DownloadEnding) {
         const moduleIndicator = showProgress && download.moduleCount > 1 ?
             <span className=" text-gray-400">{download.moduleIndex + 1}/{download.moduleCount}</span> : null;
 

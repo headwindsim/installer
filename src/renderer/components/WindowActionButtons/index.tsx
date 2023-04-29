@@ -53,6 +53,7 @@ export const WindowButtons: React.FC = () => {
 
     return (
         <div className="h-12 flex flex-row ml-auto">
+            <Button onClick={openGithub}><ExclamationCircleOutlined /></Button>
             <WindowsControl minimize whiteIcon onClick={handleMinimize} />
             <WindowsControl maximize whiteIcon onClick={handleMaximize} />
             <WindowsControl close whiteIcon onClick={handleClose} />

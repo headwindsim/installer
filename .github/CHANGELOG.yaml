@@ -9,12 +9,28 @@
 
 
 releases:
+  - name: 1.3.0
+    changes:
+      - title: Updated to latest FBW Installer Code
+        categories: [ Core ]
+        authors: [ Revyn112 ]
+      - title: Added local assets
+        categories: [ Core ]
+        authors: [ Revyn112 ]
+      - title: Added GitHub Actions
+        categories: [ Logic ]
+        authors: [ Revyn112 ]
   - name: 1.2.0
     changes:
       - title: Updated to latest FBW Installer Code
+        categories: [ Core ]
+        authors: [ Revyn112 ]
   - name: 1.1.0
     changes:
       - title: Updated to latest FBW Installer Code
+        categories: [ Core ]
+        authors: [ Revyn112 ]
   - name: 1.0.0
     changes:
       - title: Initial Release
+        authors: [ Revyn112 ]

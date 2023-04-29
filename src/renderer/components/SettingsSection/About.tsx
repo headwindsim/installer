@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
+import Headwind from 'renderer/assets/Headwind.svg';
 import * as packageInfo from "../../../../package.json";
 import path from "path";
 import fs from "fs";
@@ -38,7 +39,7 @@ export const AboutSettings: FC = () => {
     return (
         <div className="h-full flex flex-col gap-y-8 px-16 justify-center">
             <div className="flex flex-row items-center gap-x-10">
-                <img className="cursor-pointer" src="https://raw.githubusercontent.com/headwind-msfs/branding/main/logos/Headwind.svg" width={60} onClick={handleLogoClick} style={{ transform: `rotate(${logoRotation}deg)`, transition: 'transform 200ms linear' }} />
+                <img className="cursor-pointer" src={Headwind} width={60} onClick={handleLogoClick} style={{ transform: `rotate(${logoRotation}deg)`, transition: 'transform 200ms linear' }} />
 
                 <div className="flex flex-col gap-y-3">
                     <span className="text-4xl font-manrope font-bold">Headwind Installer</span>

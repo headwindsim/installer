@@ -3,7 +3,6 @@
 # Headwind Simulations Installer
 
 This repository contains the installer for Headwind Simulations projects.
-It is based on the Open-Source [FlyByWire Simulations Installer](https://github.com/flybywiresim/installer).
 
 ## How to contribute
 
@@ -37,3 +36,6 @@ npm run package
 ```
 
 Packaged applications will automatically update if there is a newer version available (compared to build version in package.json), this does also apply to development versions (ending on -devXX), which are updated via a separate stream. Updates are distributed once the build version is changed and a tag has been added.
+
+## Credits
+Based on the Open-Source [FlyByWire Simulations Installer](https://github.com/flybywiresim/installer).

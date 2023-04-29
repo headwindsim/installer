@@ -295,7 +295,7 @@ export class InstallManager {
         const tempDir = Directories.temp();
 
         const fragmenterUpdateChecker = new FragmenterUpdateChecker();
-        const updateInfo = await fragmenterUpdateChecker.needsUpdate(track.url, destDir, { forceCacheBust: true });
+        const updateInfo = await fragmenterUpdateChecker.needsUpdate(track.url, destDir, { forceCacheBust: true, forceFullInstallRatio: .5 });
 
         // Confirm download size and required disk space with user
         const requiredDiskSpace = updateInfo.requiredDiskSpace;
@@ -306,7 +306,7 @@ export class InstallManager {
         const dontAsk = settings.get(diskSpaceModalSettingString);
 
         if ((!dontAsk || freeDeskSpaceInfo.status !== FreeDiskSpaceStatus.NotLimited) && freeDeskSpaceInfo.status !== FreeDiskSpaceStatus.Unknown) {
-                const continueInstall = await showModal(
+            const continueInstall = await showModal(
                 <InstallSizeDialog
                     updateInfo={updateInfo}
                     freeDeskSpaceInfo={freeDeskSpaceInfo}
@@ -327,8 +327,8 @@ export class InstallManager {
         this.abortControllers[abortControllerID] = new AbortController();
         const signal = this.abortControllers[abortControllerID].signal;
 
-        let moduleCount = updateInfo.isFreshInstall ? 1 : updateInfo.updatedModules.length + updateInfo.addedModules.length;
-        if (!updateInfo.isFreshInstall && updateInfo.baseChanged) {
+        let moduleCount = (updateInfo.isFreshInstall || updateInfo.willFullyReDownload) ? 1 : updateInfo.updatedModules.length + updateInfo.addedModules.length;
+        if (!updateInfo.isFreshInstall && !updateInfo.willFullyReDownload && updateInfo.baseChanged) {
             moduleCount++;
         }
 
@@ -586,9 +586,6 @@ export class InstallManager {
                 await showModal(<ErrorDialog error={isFragmenterError ? e : FragmenterError.createFromError(e)} />);
 
                 startResetStateTimer();
-
-                Sentry.captureException(e);
-                await showModal(<ErrorDialog error={e} />);
 
                 return InstallResult.Failure;
             }
