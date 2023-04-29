@@ -46,6 +46,7 @@ export class SentryClient {
             dsn,
             release: packageJson.version,
             // sampleRate: 0.1,
+            ignoreErrors: ['ResizeObserver loop limit exceeded'],
         });
 
         console.log('Sentry initialized');
