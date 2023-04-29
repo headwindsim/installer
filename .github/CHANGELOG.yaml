@@ -9,7 +9,7 @@
 
 
 releases:
-- name: 1.3.2
+  - name: 1.3.2
     changes:
       - title: Fixes CDN
         categories: [ Infrastructure ]
