@@ -20,7 +20,7 @@ export enum UITheme {
     Dark = 'dark',
 }
 
-export const AddonBar: FC = ({ children }) => {
+export const AddonBar: FC = ({ children }) => {    
     const darkTheme = useIsDarkTheme();
 
     const { publisherName } = useParams<AircraftSectionURLParams>();
@@ -58,15 +58,33 @@ export const AddonBar: FC = ({ children }) => {
 
     const textClass = darkTheme ? 'text-quasi-white' : 'text-navy';
 
+    function checkScrollbar() {
+        const content = window.document.getElementById('content');
+
+        if (content.scrollHeight > content.clientHeight) {
+            content.classList.add('pr-6');
+        } else {
+            content.classList.remove('pr-6');
+        }
+    }
+    
+    window.addEventListener('resize', () => {
+        checkScrollbar();
+    });
+    
+    setTimeout(() => {
+        checkScrollbar();
+    }, 100);
+
     return (
         <div className={`flex flex-col justify-between gap-y-5 ${textClass} ${darkTheme ? 'bg-navy-dark' : 'bg-quasi-white'} px-6 py-7 h-full`}>
             <div className="flex flex-col -space-y-7">
                 <h3 className={`${textClass} font-bold -mb-1`}>{publisherData.name}</h3>
             </div>
 
-            <div className="flex-grow flex flex-col">
+            <div id="content" className="flex-grow flex flex-col overflow-y-auto">
                 {children}
-            </div>
+            </div>            
 
             <div className="flex flex-col gap-y-4 mt-auto">
                 {publisherData.buttons && (
