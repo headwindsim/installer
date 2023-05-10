@@ -22,6 +22,8 @@ export class AddonData {
         switch (track.releaseModel.type) {
             case 'githubRelease':
                 return this.latestVersionForReleasedTrack(addon);
+            case 'githubStaging':
+                return this.latestVersionForStagingTrack(addon);
             case 'githubBranch':
                 return this.latestVersionForRollingTrack(addon, track.releaseModel);
             case 'CDN':
@@ -31,6 +33,15 @@ export class AddonData {
 
     private static async latestVersionForReleasedTrack(addon: Addon): Promise<ReleaseInfo> {
         return GitVersions.getReleases(addon.repoOwner, addon.repoName)
+            .then((releases) => ({
+                name: releases[0].name,
+                releaseDate: releases[0].publishedAt.getTime(),
+                changelogUrl: releases[0].htmlUrl,
+            }));
+    }
+
+    private static async latestVersionForStagingTrack(addon: Addon): Promise<ReleaseInfo> {
+        return GitVersions.getReleases(addon.repoOwner, addon.repoName, true)
             .then((releases) => ({
                 name: releases[0].name,
                 releaseDate: releases[0].publishedAt.getTime(),
