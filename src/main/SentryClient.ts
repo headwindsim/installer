@@ -46,7 +46,7 @@ export class SentryClient {
             dsn,
             release: packageJson.version,
             // sampleRate: 0.1,
-            ignoreErrors: ['ResizeObserver loop limit exceeded', 'Network Error', 'net::ERR_INTERNET_DISCONNECTED' , 'FragmenterError(NetworkError): read ECONNRESET'],
+            ignoreErrors: ['ResizeObserver loop limit exceeded', 'Network Error', 'net::ERR_INTERNET_DISCONNECTED' , 'FragmenterError(NetworkError): read ECONNRESET', 'net::ERR_NETWORK_IO_SUSPENDED'],
         });
 
         console.log('Sentry initialized');
