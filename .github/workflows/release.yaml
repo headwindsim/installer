@@ -30,7 +30,13 @@ jobs:
         run: npm ci
 
       - name: Install system requirements
-        run: sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install -y wine32 wine64
+        run: |
+          sudo eatmydata apt-get install ppa-purge
+          sudo eatmydata ppa-purge -y ppa:ubuntu-toolchain-r/test
+
+          sudo dpkg --add-architecture i386
+          sudo apt update
+          sudo DEBIAN_FRONTEND=noninteractive eatmydata apt install -y --no-install-recommends wine-stable wine32 wine64
 
       - name: Package installer
         run: |
