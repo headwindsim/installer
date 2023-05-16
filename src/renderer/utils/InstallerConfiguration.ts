@@ -27,8 +27,8 @@ export type GithubReleaseReleaseModel = {
     type: 'githubRelease',
 }
 
-export type GithubStagingReleaseModel = {
-    type: 'githubStaging',
+export type GithubPreReleaseModel = {
+    type: 'githubPreRelease',
 }
 
 export type GithubBranchReleaseModel = {
@@ -40,7 +40,7 @@ export type CDNReleaseModel = {
     type: 'CDN',
 }
 
-export type ReleaseModel = GithubReleaseReleaseModel | GithubStagingReleaseModel | GithubBranchReleaseModel | CDNReleaseModel
+export type ReleaseModel = GithubReleaseReleaseModel | GithubPreReleaseModel | GithubBranchReleaseModel | CDNReleaseModel
 
 type BaseAddonTrack = {
     name: string,

@@ -1,5 +1,5 @@
 import { Addon, AddonTrack, GithubBranchReleaseModel } from "renderer/utils/InstallerConfiguration";
-import { GitVersions } from "@flybywiresim/api-client";
+import { GitVersions } from "@headwindsimulations/api-client";
 import { Directories } from "./Directories";
 import fs from 'fs-extra';
 import { getCurrentInstall, FragmenterUpdateChecker } from "@flybywiresim/fragmenter";
@@ -14,6 +14,7 @@ import { InstallStatus } from "renderer/components/AddonSection/Enums";
 export type ReleaseInfo = {
     name: string,
     releaseDate: number,
+    isPreRelease?: boolean,
     changelogUrl?: string,
 }
 
@@ -22,8 +23,8 @@ export class AddonData {
         switch (track.releaseModel.type) {
             case 'githubRelease':
                 return this.latestVersionForReleasedTrack(addon);
-            case 'githubStaging':
-                return this.latestVersionForStagingTrack(addon);
+            case 'githubPreRelease':
+                return this.latestVersionForPreReleaseTrack(addon);
             case 'githubBranch':
                 return this.latestVersionForRollingTrack(addon, track.releaseModel);
             case 'CDN':
@@ -40,13 +41,17 @@ export class AddonData {
             }));
     }
 
-    private static async latestVersionForStagingTrack(addon: Addon): Promise<ReleaseInfo> {
+    private static async latestVersionForPreReleaseTrack(addon: Addon): Promise<ReleaseInfo> {
         return GitVersions.getReleases(addon.repoOwner, addon.repoName, true)
-            .then((releases) => ({
-                name: releases[0].name,
-                releaseDate: releases[0].publishedAt.getTime(),
-                changelogUrl: releases[0].htmlUrl,
-            }));
+            .then((releases) => {
+                const preReleaseReleases = releases.filter(release => release.isPreRelease);
+                console.log(preReleaseReleases);
+                return {
+                    name: preReleaseReleases[0].name,
+                    releaseDate: preReleaseReleases[0].publishedAt.getTime(),
+                    changelogUrl: preReleaseReleases[0].htmlUrl,
+                };
+            });
     }
 
     private static async latestVersionForRollingTrack(addon: Addon, releaseModel: GithubBranchReleaseModel): Promise<ReleaseInfo> {
