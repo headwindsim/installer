@@ -9,6 +9,16 @@
 
 
 releases:
+  - name: 1.3.6
+    changes:
+      - title: Change GitHub Release Type for Pre-Release Builds
+        categories: [ Core ]
+        authors: [ Revyn112 ]
+  - name: 1.3.5
+    changes:
+      - title: Remove GitHub Issue Button
+        categories: [ Core ]
+        authors: [ Revyn112 ]
   - name: 1.3.4
     changes:
       - title: Add GitHub Release Type for Staging Builds
