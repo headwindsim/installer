@@ -1,6 +1,6 @@
 import React from "react";
 import { Addon, AddonTrack, Publisher } from "renderer/utils/InstallerConfiguration";
-import { PromptModal } from "renderer/components/Modal";
+import {AlertModal, PromptModal} from "renderer/components/Modal";
 import { ButtonType } from "renderer/components/Button";
 import {
     clearDownloadInterrupted,
@@ -41,6 +41,8 @@ import { ErrorDialog } from "renderer/components/Modal/ErrorDialog";
 import { InstallSizeDialog } from "renderer/components/Modal/InstallSizeDialog";
 import { IncompatibleAddOnsCheck } from "renderer/utils/IncompatibleAddOnsCheck";
 import { FreeDiskSpace, FreeDiskSpaceStatus } from "renderer/utils/FreeDiskSpace";
+import {ExclamationTriangle} from "react-bootstrap-icons";
+import {SentrySessionCard} from "renderer/components/SentrySessionCard";
 
 type FragmenterEventArguments<K extends keyof FragmenterInstallerEvents | keyof FragmenterContextEvents> = Parameters<(FragmenterInstallerEvents & FragmenterContextEvents)[K]>
 
@@ -194,77 +196,131 @@ export class InstallManager {
 
         // Find dependencies
         for (const dependency of addon.dependencies ?? []) {
-            const [, publisherKey, addonKey] = dependency.addon.match(/@(\w+)\/(\w+)/);
+            const isInternal = dependency.addon.startsWith('@');
+            
+            if(isInternal) {
+                const [, publisherKey, addonKey] = dependency.addon.match(/@(\w+)\/(\w+)/);
 
-            const dependencyPublisher = Resolver.findPublisher(publisherKey);
-            const dependencyAddon = Resolver.findAddon(publisherKey, addonKey);
+                const dependencyPublisher = Resolver.findPublisher(publisherKey);
+                const dependencyAddon = Resolver.findAddon(publisherKey, addonKey);
 
-            if (!dependencyAddon) {
-                console.error(`Addon specified dependency for unknown addon: @${publisherKey}/${addonKey}`);
-                return InstallResult.Failure;
-            }
+                if (!dependencyAddon) {
+                    console.error(`Addon specified dependency for unknown addon: @${publisherKey}/${addonKey}`);
+                    return InstallResult.Failure;
+                }
 
-            const dependencyInstallState = await this.getAddonInstallState(dependencyAddon);
+                const dependencyInstallState = await this.getAddonInstallState(dependencyAddon);
 
-            const isDependencyUptoDate = dependencyInstallState.status === InstallStatus.UpToDate;
-            const isDependencyNotInstalled = dependencyInstallState.status === InstallStatus.NotInstalled;
+                const isDependencyUptoDate = dependencyInstallState.status === InstallStatus.UpToDate;
+                const isDependencyNotInstalled = dependencyInstallState.status === InstallStatus.NotInstalled;
 
-            if (!isDependencyUptoDate) {
-                let doInstallDependency = true;
+                if (!isDependencyUptoDate) {
+                    let doInstallDependency = true;
 
-                if (dependency.optional && isDependencyNotInstalled) {
-                    const settingString = `mainSettings.disableDependencyPrompt.${publisher.key}.${addon.key}.@${dependencyPublisher.key}/${dependencyAddon.key}`;
-                    const doNotAsk = settings.get(settingString);
+                    if (dependency.optional && isDependencyNotInstalled) {
+                        const settingString = `mainSettings.disableDependencyPrompt.${publisher.key}.${addon.key}.@${dependencyPublisher.key}/${dependencyAddon.key}`;
+                        const doNotAsk = settings.get(settingString);
 
-                    doInstallDependency = false;
+                        doInstallDependency = false;
 
-                    if (!doNotAsk) {
-                        doInstallDependency = await showModal(
+                        if (!doNotAsk) {
+                            doInstallDependency = await showModal(
+                                <PromptModal
+                                    title="Dependency"
+                                    bodyText={
+                                        <DependencyDialogBody
+                                            addon={addon}
+                                            dependency={dependency}
+                                            dependencyAddon={dependencyAddon.name}
+                                            dependencyPublisher={dependencyPublisher.name}
+                                        />
+                                    }
+                                    cancelText="No"
+                                    confirmText="Yes"
+                                    confirmColor={ButtonType.Positive}
+                                    dontShowAgainSettingName={settingString}
+                                />,
+                            );
+                        }
+
+                    }
+
+                    if (doInstallDependency) {
+                        this.setCurrentInstallState(addon, {
+                            status: InstallStatus.InstallingDependency,
+                            dependencyAddonKey: dependencyAddon.key,
+                            dependencyPublisherKey: dependencyPublisher.key,
+                        });
+
+                        const result = await this.installAddon(dependencyAddon, dependencyPublisher, showModal, addon);
+
+                        if (result === InstallResult.Failure) {
+                            console.error('Error while installing dependency - aborting');
+
+                            setErrorState();
+                            startResetStateTimer();
+
+                            return InstallResult.Failure;
+                        } else if (result === InstallResult.Cancelled) {
+                            console.log('Dependency install cancelled, canceling main addon too.');
+
+                            setCancelledState();
+                            startResetStateTimer();
+
+                            return InstallResult.Cancelled;
+                        } else {
+                            console.log(`Dependency @${publisherKey}/${addonKey} installed successfully.`);
+                        }
+                    }
+                }                
+            } else {
+                const [, creator, title] = dependency.addon.match(/(.+)\/(.+)/);
+                const findExternalAddon = await Resolver.findExternalAddon(creator, title);
+
+                if(!findExternalAddon) {
+                    console.error(`External addon not found`);
+                    
+                    if(dependency.optional) {
+                        const continueInstall = await showModal(
                             <PromptModal
                                 title="Dependency"
                                 bodyText={
                                     <DependencyDialogBody
                                         addon={addon}
                                         dependency={dependency}
-                                        dependencyAddon={dependencyAddon}
-                                        dependencyPublisher={dependencyPublisher}
+                                        dependencyAddon={title}
+                                        dependencyPublisher={creator}
                                     />
                                 }
                                 cancelText="No"
                                 confirmText="Yes"
                                 confirmColor={ButtonType.Positive}
-                                dontShowAgainSettingName={settingString}
                             />,
                         );
-                    }
-
-                }
-
-                if (doInstallDependency) {
-                    this.setCurrentInstallState(addon, {
-                        status: InstallStatus.InstallingDependency,
-                        dependencyAddonKey: dependencyAddon.key,
-                        dependencyPublisherKey: dependencyPublisher.key,
-                    });
-
-                    const result = await this.installAddon(dependencyAddon, dependencyPublisher, showModal, addon);
-
-                    if (result === InstallResult.Failure) {
-                        console.error('Error while installing dependency - aborting');
-
-                        setErrorState();
-                        startResetStateTimer();
-
-                        return InstallResult.Failure;
-                    } else if (result === InstallResult.Cancelled) {
-                        console.log('Dependency install cancelled, canceling main addon too.');
-
-                        setCancelledState();
-                        startResetStateTimer();
-
-                        return InstallResult.Cancelled;
+                        if (!continueInstall) {
+                            startResetStateTimer();
+                            return InstallResult.Cancelled;
+                        }
                     } else {
-                        console.log(`Dependency @${publisherKey}/${addonKey} installed successfully.`);
+                        const confirm = await showModal(
+                            <AlertModal
+                                title="Dependency"
+                                bodyText={
+                                    <DependencyDialogBody
+                                        addon={addon}
+                                        dependency={dependency}
+                                        dependencyAddon={title}
+                                        dependencyPublisher={creator}
+                                    />
+                                }
+                                acknowledgeText="Dismiss"
+                            />
+                        )
+
+                        if (confirm) {
+                            startResetStateTimer();
+                            return InstallResult.Failure;
+                        }
                     }
                 }
             }

@@ -1,24 +1,25 @@
 import React, { FC } from "react";
 import { Box } from "react-bootstrap-icons";
 import { Addon, AddonDependency, Publisher } from "renderer/utils/InstallerConfiguration";
+import {is} from "immer/dist/utils/common";
 
 export interface DependencyDialogBodyProps {
     addon: Addon,
     dependency: AddonDependency,
-    dependencyAddon: Addon,
-    dependencyPublisher: Publisher,
+    dependencyAddon: string,
+    dependencyPublisher: string,
 }
 
 export const DependencyDialogBody: FC<DependencyDialogBodyProps> = ({ addon, dependency, dependencyAddon, dependencyPublisher }) => (
     <>
         <p>
-            <b>{dependencyAddon.name}</b>
+            <b>{dependencyAddon}</b>
             {' '}
             by
             {' '}
-            <b>{dependencyPublisher.name}</b>
+            <b>{dependencyPublisher}</b>
             {' '}
-            needs to be installed to use the full functionality of
+            is {dependency.optional ? 'recommend' : 'required' } to be installed to use the full functionality of
             {' '}
             <b>{addon.name}</b>
             .
@@ -28,8 +29,8 @@ export const DependencyDialogBody: FC<DependencyDialogBodyProps> = ({ addon, dep
             <Box size={36} />
 
             <div className="flex flex-col gap-y-2">
-                <span className="text-3xl font-medium">{dependencyPublisher.name}</span>
-                <span className="text-4xl font-semibold">{dependencyAddon.name}</span>
+                <span className="text-3xl font-medium">{dependencyPublisher}</span>
+                <span className="text-4xl font-semibold">{dependencyAddon}</span>
             </div>
         </div>
 

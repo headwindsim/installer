@@ -6,6 +6,9 @@ import {
     Publisher,
 } from "renderer/utils/InstallerConfiguration";
 import { store } from "renderer/redux/store";
+import {Directories} from "renderer/utils/Directories";
+import fs from "fs-extra";
+import path from "path";
 
 const _cache: { [k: string]: Definition } = {};
 
@@ -28,6 +31,50 @@ export class Resolver {
         }
 
         return publisher.addons.find((it) => it.key === addonKey);
+    }
+
+    public static async findExternalAddon(creator?: string, title?: string): Promise<boolean> {
+        const isFound = false;
+        console.log('Searching for external addon');
+        
+        const steam= await Directories.getInstalledPackagesSteamPath();
+        if(fs.existsSync(steam)) {
+            console.log(`SteamInstalledPackagesPath: ${steam}`);
+        }
+
+        const onestore= await Directories.getInstalledPackagesOneStorePath();
+        if(fs.existsSync(onestore)) {
+            console.log(`OneStoreInstalledPackagesPath: ${onestore}`);
+        }        
+        
+        const manifestFileName = 'manifest.json';
+        const comDir = Directories.communityLocation();
+
+        const addonFolders = fs.readdirSync(comDir);
+
+        for (const entry of addonFolders) {
+            const filePath = path.join(comDir, entry);
+            if(fs.existsSync(filePath)) {
+                const stat = fs.statSync(filePath);
+
+                if (stat.isDirectory()) {
+                    const dirEntries = fs.readdirSync(filePath);
+
+                    if (dirEntries.includes(manifestFileName)) {
+                        const manifest = JSON.parse(fs.readFileSync(path.join(filePath, manifestFileName), 'utf8'));
+
+                        const titleMatches = !title || manifest.title.toLowerCase() === title.toLowerCase();
+                        const creatorMatches = !creator || manifest.creator.toLowerCase() === creator.toLowerCase();
+
+                        if (titleMatches && creatorMatches) {
+                            return true;
+                        }
+                    }
+                }                
+            }
+        }
+        
+        return false;
     }
 
     public static findDefinition(ref: string, publisher: Publisher): Definition {

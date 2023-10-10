@@ -22,6 +22,56 @@ export class Directories {
         return settings.get('mainSettings.msfsCommunityPath') as string;
     }
 
+    static getInstalledPackagesSteamPath(): Promise<string> {
+        return new Promise((resolve, reject) => {
+            // Resolve the path to the file using the APPDATA environment variable
+            const filePath = path.join(process.env.APPDATA, 'Microsoft Flight Simulator', 'UserCfg.opt');
+
+            fs.readFile(filePath, 'utf8', (err, data) => {
+                if (err) {
+                    reject("Error reading the file: " + err);
+                    return;
+                }
+
+                const regex = /InstalledPackagesPath\s+"([^"]+)"/;
+                const match = data.match(regex);
+
+                if (match && match[1]) {
+                    const pathValue = match[1];
+                    const pathFinal = path.join(pathValue, 'Official', 'Steam');
+                    resolve(pathFinal);
+                } else {
+                    reject('InstalledPackagesPath not found.');
+                }
+            });
+        });
+    }
+
+    static getInstalledPackagesOneStorePath(): Promise<string> {
+        return new Promise((resolve, reject) => {
+            // Resolve the path to the file using the APPDATA environment variable
+            const filePath = path.join(process.env.APPDATA, 'Microsoft Flight Simulator', 'UserCfg.opt');
+
+            fs.readFile(filePath, 'utf8', (err, data) => {
+                if (err) {
+                    reject("Error reading the file: " + err);
+                    return;
+                }
+
+                const regex = /InstalledPackagesPath\s+"([^"]+)"/;
+                const match = data.match(regex);
+
+                if (match && match[1]) {
+                    const pathValue = match[1];
+                    const pathFinal = path.join(pathValue, 'Official', 'OneStore');
+                    resolve(pathFinal);
+                } else {
+                    reject('InstalledPackagesPath not found.');
+                }
+            });
+        });
+    }
+
     static inCommunityLocation(targetDir: string): string {
         return path.join(Directories.communityLocation(), this.sanitize(targetDir));
     }
