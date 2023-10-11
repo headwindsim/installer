@@ -1,4 +1,5 @@
 import path from "path";
+import walk from "walkdir";
 import { Addon } from "renderer/utils/InstallerConfiguration";
 import fs from "fs-extra";
 import settings from "common/settings";
@@ -24,10 +25,30 @@ export class Directories {
 
     static getInstalledPackagesSteamPath(): Promise<string> {
         return new Promise((resolve, reject) => {
-            // Resolve the path to the file using the APPDATA environment variable
-            const filePath = path.join(process.env.APPDATA, 'Microsoft Flight Simulator', 'UserCfg.opt');
+            // Ensure proper functionality in main- and renderer-process
+            let msfsConfigPath = null;
 
-            fs.readFile(filePath, 'utf8', (err, data) => {
+            const steamPath = path.join(process.env.APPDATA, "\\Microsoft Flight Simulator\\UserCfg.opt");
+            const storePath = path.join(process.env.LOCALAPPDATA, "\\Packages\\Microsoft.FlightSimulator_8wekyb3d8bbwe\\LocalCache\\UserCfg.opt");
+
+            if (fs.existsSync(steamPath)) {
+                msfsConfigPath = steamPath;
+            } else if (fs.existsSync(storePath)) {
+                msfsConfigPath = storePath;
+            } else {
+                walk(process.env.LOCALAPPDATA, (path) => {
+                    if (path.includes("Flight") && path.includes("UserCfg.opt")) {
+                        msfsConfigPath = path;
+                    }
+                });
+            }
+
+            if (!msfsConfigPath) {
+                reject('MSFSConfigPath not found.');
+                return;
+            }
+
+            fs.readFile(msfsConfigPath, 'utf8', (err, data) => {
                 if (err) {
                     reject("Error reading the file: " + err);
                     return;
@@ -49,10 +70,30 @@ export class Directories {
 
     static getInstalledPackagesOneStorePath(): Promise<string> {
         return new Promise((resolve, reject) => {
-            // Resolve the path to the file using the APPDATA environment variable
-            const filePath = path.join(process.env.APPDATA, 'Microsoft Flight Simulator', 'UserCfg.opt');
+            // Ensure proper functionality in main- and renderer-process
+            let msfsConfigPath = null;
 
-            fs.readFile(filePath, 'utf8', (err, data) => {
+            const steamPath = path.join(process.env.APPDATA, "\\Microsoft Flight Simulator\\UserCfg.opt");
+            const storePath = path.join(process.env.LOCALAPPDATA, "\\Packages\\Microsoft.FlightSimulator_8wekyb3d8bbwe\\LocalCache\\UserCfg.opt");
+
+            if (fs.existsSync(steamPath)) {
+                msfsConfigPath = steamPath;
+            } else if (fs.existsSync(storePath)) {
+                msfsConfigPath = storePath;
+            } else {
+                walk(process.env.LOCALAPPDATA, (path) => {
+                    if (path.includes("Flight") && path.includes("UserCfg.opt")) {
+                        msfsConfigPath = path;
+                    }
+                });
+            }
+
+            if (!msfsConfigPath) {
+                reject('MSFSConfigPath not found.');
+                return;
+            }
+
+            fs.readFile(msfsConfigPath, 'utf8', (err, data) => {
                 if (err) {
                     reject("Error reading the file: " + err);
                     return;
