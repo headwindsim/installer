@@ -9,6 +9,17 @@
 
 
 releases:
+  - name: 1.4.0
+    changes:
+      - title: Change Discord Support Url
+        categories: [ Core ]
+        authors: [ Revyn112 ]
+      - title: Add Dependency Check for Steam and OneStore
+        categories: [ Core ]
+        authors: [ Revyn112 ]
+      - title: Update Packages and fixes minor bugs
+        categories: [ Core ]
+        authors: [ Revyn112 ]
   - name: 1.3.6
     changes:
       - title: Change GitHub Release Type for Pre-Release Builds
