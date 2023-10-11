@@ -1,8 +1,12 @@
 {
   "name": "headwind-installer",
   "productName": "Headwind Installer",
-  "version": "1.3.6",
+  "version": "1.4.0",
   "description": "Desktop application to install and customize Headwind addons",
+  "configUrls": {
+    "production": "https://cdn.headwindsim.net/installer/config/production.json",
+    "confidentialBaseUrl": "https://cdn.headwindsim.net/installer/config/confidential"
+  },
   "main": "webpack/main/main.js",
   "scripts": {
     "compile:base:licenses": "node scripts/licenses.js",
@@ -71,8 +75,8 @@
     "babel-loader": "^8.2.2",
     "concurrently": "^6.2.1",
     "css-loader": "^4.3.0",
-    "electron": "^15.5.7",
-    "electron-builder": "^23.6.0",
+    "electron": "^25.2.0",
+    "electron-builder": "^24.4.0",
     "electron-devtools-installer": "^3.2.0",
     "eslint": "^7.19.0",
     "eslint-plugin-import": "^2.20.0",

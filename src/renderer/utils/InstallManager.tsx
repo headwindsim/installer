@@ -313,7 +313,7 @@ export class InstallManager {
                                         dependencyPublisher={creator}
                                     />
                                 }
-                                acknowledgeText="Dismiss"
+                                acknowledgeText="Cancel"
                             />
                         )
 

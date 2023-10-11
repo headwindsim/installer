@@ -9,6 +9,7 @@ import { store } from "renderer/redux/store";
 import {Directories} from "renderer/utils/Directories";
 import fs from "fs-extra";
 import path from "path";
+import {is} from "immer/dist/utils/common";
 
 const _cache: { [k: string]: Definition } = {};
 
@@ -34,26 +35,43 @@ export class Resolver {
     }
 
     public static async findExternalAddon(creator?: string, title?: string): Promise<boolean> {
-        const isFound = false;
         console.log('Searching for external addon');
         
         const steam= await Directories.getInstalledPackagesSteamPath();
         if(fs.existsSync(steam)) {
             console.log(`SteamInstalledPackagesPath: ${steam}`);
+            const isFound = this.findInInstallPath(steam, creator, title);
+            if(isFound) {
+                return true;
+            }
         }
 
         const onestore= await Directories.getInstalledPackagesOneStorePath();
         if(fs.existsSync(onestore)) {
             console.log(`OneStoreInstalledPackagesPath: ${onestore}`);
-        }        
-        
-        const manifestFileName = 'manifest.json';
+            const isFound = this.findInInstallPath(onestore, creator, title);
+            if(isFound) {
+                return true;
+            }
+        }
+
         const comDir = Directories.communityLocation();
-
-        const addonFolders = fs.readdirSync(comDir);
-
+        if(fs.existsSync(comDir)) {
+            console.log(`CommunityInstalledPackagesPath: ${comDir}`);
+            const isFound = this.findInInstallPath(comDir, creator, title);
+            if(isFound) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    private static findInInstallPath(installPath: string, creator?: string, title?: string) {
+        const manifestFileName = 'manifest.json';
+        const addonFolders = fs.readdirSync(installPath);
         for (const entry of addonFolders) {
-            const filePath = path.join(comDir, entry);
+            const filePath = path.join(installPath, entry);
             if(fs.existsSync(filePath)) {
                 const stat = fs.statSync(filePath);
 
@@ -70,7 +88,7 @@ export class Resolver {
                             return true;
                         }
                     }
-                }                
+                }
             }
         }
         
