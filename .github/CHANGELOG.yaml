@@ -9,6 +9,11 @@
 
 
 releases:
+  - name: 1.4.2
+    changes:
+      - title: Update API Client
+        categories: [ Core ]
+        authors: [ Revyn112 ]
   - name: 1.4.0
     changes:
       - title: Change Discord Support Url
