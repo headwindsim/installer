@@ -38,7 +38,7 @@ import channels from "common/channels";
 import { MemoryRouter } from 'react-router-dom';
 import { store } from "renderer/redux/store";
 import { setConfiguration } from './redux/features/configuration';
-import { GitVersions } from "@headwindsimulations/api-client";
+import { GitVersions } from "@flybywiresim/api-client";
 import { addReleases } from "renderer/redux/features/releaseNotes";
 import { ModalProvider } from "renderer/components/Modal";
 import { setSentrySessionID } from "renderer/redux/features/sentrySessionID";
