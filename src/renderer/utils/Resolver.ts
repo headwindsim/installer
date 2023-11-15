@@ -37,24 +37,20 @@ export class Resolver {
     public static async findExternalAddon(creator?: string, title?: string): Promise<boolean> {
         console.log('Searching for external addon');
         
-        const steam= await Directories.getInstalledPackagesSteamPath();
-        if(fs.existsSync(steam)) {
-            console.log(`SteamInstalledPackagesPath: ${steam}`);
-            const isFound = this.findInInstallPath(steam, creator, title);
+        const officialLocation= await Directories.getOfficialLocation().then(officialLocation => {
+            console.log(`OfficialLocationPath: ${officialLocation}`);
+            const isFound = this.findInInstallPath(officialLocation, creator, title);
             if(isFound) {
                 return true;
             }
-        }
-
-        const onestore= await Directories.getInstalledPackagesOneStorePath();
-        if(fs.existsSync(onestore)) {
-            console.log(`OneStoreInstalledPackagesPath: ${onestore}`);
-            const isFound = this.findInInstallPath(onestore, creator, title);
-            if(isFound) {
-                return true;
-            }
-        }
-
+        }).catch(reason => {
+            console.log(reason);
+            return false
+        });
+        
+        if(officialLocation) 
+            return true;
+        
         const comDir = Directories.communityLocation();
         if(fs.existsSync(comDir)) {
             console.log(`CommunityInstalledPackagesPath: ${comDir}`);

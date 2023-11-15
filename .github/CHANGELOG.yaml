@@ -9,6 +9,10 @@
 
 
 releases:
+  - name: 1.4.4
+    changes:
+      - title: Add an Option to set a MSFS Base Directory for better dependency checks with Horizon Simulation Addons
+        categories: [ Core ]
   - name: 1.4.0
     changes:
       - title: Change Discord Support Url

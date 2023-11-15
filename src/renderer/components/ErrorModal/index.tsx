@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { setupInstallPath } from 'renderer/actions/install-path.utils';
+import { setupInstallPath, setupMsfsBasePath } from 'renderer/actions/install-path.utils';
 import settings from "common/settings";
 import { Directories } from "renderer/utils/Directories";
 import * as fs from "fs";
+import * as path from "path";
 
 export const ErrorModal = (): JSX.Element => {
+    const [baseError, setBaseError] = useState<boolean>(!fs.existsSync(path.join(Directories.baseLocation(), 'UserCfg.opt')));
     const [communityError, setCommunityError] = useState<boolean>(!fs.existsSync(Directories.installLocation()) || Directories.installLocation() === 'C:\\');
     const [linuxError, setLinuxError] = useState<boolean>(Directories.installLocation() === 'linux');
 
     const handleClose = () => {
+        setBaseError(false);
         setCommunityError(false);
         setLinuxError(false);
     };
@@ -22,6 +25,13 @@ export const ErrorModal = (): JSX.Element => {
         }
     };
 
+    const handleSelectBasePath = async () => {
+        const path = await setupMsfsBasePath();
+        if (path) {
+            handleClose();
+        }
+    };
+
     const content = (): JSX.Element => {
         // Linux's error goes first because it may interfere with the other dir checkers
         if (linuxError) {
@@ -30,6 +40,16 @@ export const ErrorModal = (): JSX.Element => {
                     <span className="w-3/5 text-center text-2xl">Seems like you're using Linux</span>
                     <span className="w-3/5 text-center text-2xl">We're unable to autodetect your install currently. Please set the correct location before we can continue.</span>
                     <button className="bg-navy-lightest hover:bg-navy-lighter px-5 py-2 text-lg font-semibold rounded-lg" onClick={handleSelectPath}>Select</button>
+                </>
+            );
+        }
+        if (baseError && (Directories.installLocation() !== 'linux')) {
+            return (
+                <>
+                    <span className="w-3/5 text-center text-2xl">Your Microsoft Flight Base Folder folder is set to</span>
+                    <pre className="w-3/5 bg-gray-700 text-2xl text-center font-mono px-6 py-2.5 mb-0 rounded-lg">{Directories.baseLocation()}</pre>
+                    <span className="w-3/5 text-center text-2xl">but we couldn't find the UserOpt.cfg there. Please set the correct location before we can continue.</span>
+                    <button className="bg-navy-lightest hover:bg-navy-lighter px-5 py-2 text-lg font-semibold rounded-lg" onClick={handleSelectBasePath}>Select</button>
                 </>
             );
         }

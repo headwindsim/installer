@@ -1,5 +1,10 @@
 import React, { FC } from 'react';
-import { setupMsfsCommunityPath, setupInstallPath, setupTempLocation } from 'renderer/actions/install-path.utils';
+import {
+    setupMsfsCommunityPath,
+    setupInstallPath,
+    setupTempLocation,
+    setupMsfsBasePath
+} from 'renderer/actions/install-path.utils';
 import settings, { useSetting } from "common/settings";
 import { Toggle } from '../Toggle';
 
@@ -15,6 +20,22 @@ interface SettingItemProps<T> {
     value: T;
     setValue: (value: T) => void;
 }
+
+const MsfsBasePathSettingItem = ({ value, setValue }: SettingItemProps<string>): JSX.Element => {
+    const handleClick = async () => {
+        const path = await setupMsfsBasePath();
+
+        if (path) {
+            setValue(path);
+        }
+    };
+
+    return (
+        <SettingsItem name="MSFS Base Directory">
+            <div className="text-white hover:text-gray-400 cursor-pointer underline transition duration-200" onClick={handleClick}>{value}</div>
+        </SettingsItem>
+    );
+};
 
 const MsfsCommunityPathSettingItem = ({ value, setValue }: SettingItemProps<string>): JSX.Element => {
     const handleClick = async () => {
@@ -117,6 +138,7 @@ const UseCdnSettingItem = ({ value, setValue }: SettingItemProps<boolean>) => {
 };
 
 const index = (): JSX.Element => {
+    const [basePath, setBasePath] = useSetting<string>('mainSettings.msfsBasePath');
     const [communityPath, setCommunityPath] = useSetting<string>('mainSettings.msfsCommunityPath');
     const [installPath, setInstallPath] = useSetting<string>('mainSettings.installPath');
     const [tempLocation, setTempLocation] = useSetting<string>('mainSettings.tempLocation');
@@ -129,6 +151,7 @@ const index = (): JSX.Element => {
             <div className="flex flex-col">
                 <h2 className="text-white">Download Settings</h2>
                 <div className="flex flex-col divide-y divide-gray-600">
+                    <MsfsBasePathSettingItem value={basePath} setValue={setBasePath} />
                     <MsfsCommunityPathSettingItem value={communityPath} setValue={setCommunityPath} />
                     <InstallPathSettingItem value={installPath} setValue={setInstallPath} />
                     <SeparateTempLocationSettingItem value={separateTempLocation} setValue={setSeparateTempLocation} />

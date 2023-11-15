@@ -11,9 +11,6 @@ const TEMP_DIRECTORY_PREFIXES_FOR_CLEANUP = [
     TEMP_DIRECTORY_PREFIX,
 ];
 
-const MSFS_APPDATA_PATH = 'Packages\\Microsoft.FlightSimulator_8wekyb3d8bbwe\\LocalState\\packages\\';
-const MSFS_STEAM_PATH = 'Microsoft Flight Simulator\\Packages';
-
 export class Directories {
     private static sanitize(suffix: string): string {
         return path.normalize(suffix).replace(/^(\.\.(\/|\\|$))+/, '');
@@ -23,96 +20,49 @@ export class Directories {
         return settings.get('mainSettings.msfsCommunityPath') as string;
     }
 
-    static getInstalledPackagesSteamPath(): Promise<string> {
+    static baseLocation(): string {
+        return settings.get('mainSettings.msfsBasePath') as string;
+    }
+
+    static officialLocation = (): string => {
+        const msfsConfigPath = path.join(Directories.baseLocation(), 'UserCfg.opt');
+        if (!fs.existsSync(msfsConfigPath)) {
+            return 'C:\\';
+        }
+
+        try {
+            const msfsConfig = fs.readFileSync(msfsConfigPath).toString();
+            const msfsConfigLines = msfsConfig.split(/\r?\n/);
+            const packagesPathLine = msfsConfigLines.find(line => line.includes('InstalledPackagesPath'));
+            const officialDir = path.join(packagesPathLine.split(" ").slice(1).join(" ").replaceAll('"', ''), "\\Official");
+
+            return fs.existsSync(officialDir) ? officialDir : 'C:\\';
+        } catch (e) {
+            console.warn('Could not parse official dir from file', msfsConfigPath);
+            console.error(e);
+            return 'C:\\';
+        }
+    };
+
+    static getOfficialLocation(): Promise<string> {
         return new Promise((resolve, reject) => {
-            // Ensure proper functionality in main- and renderer-process
-            let msfsConfigPath = null;
-
-            const steamPath = path.join(process.env.APPDATA, "\\Microsoft Flight Simulator\\UserCfg.opt");
-            const storePath = path.join(process.env.LOCALAPPDATA, "\\Packages\\Microsoft.FlightSimulator_8wekyb3d8bbwe\\LocalCache\\UserCfg.opt");
-
-            if (fs.existsSync(steamPath)) {
-                msfsConfigPath = steamPath;
-            } else if (fs.existsSync(storePath)) {
-                msfsConfigPath = storePath;
-            } else {
-                walk(process.env.LOCALAPPDATA, (path) => {
-                    if (path.includes("Flight") && path.includes("UserCfg.opt")) {
-                        msfsConfigPath = path;
-                    }
-                });
+            if(fs.existsSync(Directories.inOfficialLocation('Steam'))) {
+                resolve(path.join(Directories.officialLocation(), 'Steam'));
             }
 
-            if (!msfsConfigPath) {
-                reject('MSFSConfigPath not found.');
-                return;
+            if(fs.existsSync(Directories.inOfficialLocation('OneStore'))) {
+                resolve(path.join(Directories.officialLocation(), 'OneStore'));
             }
 
-            fs.readFile(msfsConfigPath, 'utf8', (err, data) => {
-                if (err) {
-                    reject("Error reading the file: " + err);
-                    return;
-                }
-
-                const regex = /InstalledPackagesPath\s+"([^"]+)"/;
-                const match = data.match(regex);
-
-                if (match && match[1]) {
-                    const pathValue = match[1];
-                    const pathFinal = path.join(pathValue, 'Official', 'Steam');
-                    resolve(pathFinal);
-                } else {
-                    reject('InstalledPackagesPath not found.');
-                }
-            });
+            reject('OfficialLocationPath not found.');
         });
     }
 
-    static getInstalledPackagesOneStorePath(): Promise<string> {
-        return new Promise((resolve, reject) => {
-            // Ensure proper functionality in main- and renderer-process
-            let msfsConfigPath = null;
-
-            const steamPath = path.join(process.env.APPDATA, "\\Microsoft Flight Simulator\\UserCfg.opt");
-            const storePath = path.join(process.env.LOCALAPPDATA, "\\Packages\\Microsoft.FlightSimulator_8wekyb3d8bbwe\\LocalCache\\UserCfg.opt");
-
-            if (fs.existsSync(steamPath)) {
-                msfsConfigPath = steamPath;
-            } else if (fs.existsSync(storePath)) {
-                msfsConfigPath = storePath;
-            } else {
-                walk(process.env.LOCALAPPDATA, (path) => {
-                    if (path.includes("Flight") && path.includes("UserCfg.opt")) {
-                        msfsConfigPath = path;
-                    }
-                });
-            }
-
-            if (!msfsConfigPath) {
-                reject('MSFSConfigPath not found.');
-                return;
-            }
-
-            fs.readFile(msfsConfigPath, 'utf8', (err, data) => {
-                if (err) {
-                    reject("Error reading the file: " + err);
-                    return;
-                }
-
-                const regex = /InstalledPackagesPath\s+"([^"]+)"/;
-                const match = data.match(regex);
-
-                if (match && match[1]) {
-                    const pathValue = match[1];
-                    const pathFinal = path.join(pathValue, 'Official', 'OneStore');
-                    resolve(pathFinal);
-                } else {
-                    reject('InstalledPackagesPath not found.');
-                }
-            });
-        });
+    static inOfficialLocation(targetDir: string): string {
+        console.log(path.join(Directories.officialLocation(), this.sanitize(targetDir)));
+        return path.join(Directories.officialLocation(), this.sanitize(targetDir));
     }
-
+    
     static inCommunityLocation(targetDir: string): string {
         return path.join(Directories.communityLocation(), this.sanitize(targetDir));
     }
@@ -151,16 +101,12 @@ export class Directories {
         return path.join(settings.get('mainSettings.liveriesPath') as string, this.sanitize(targetDir));
     }
 
-    static inPackagesMicrosoftStore(targetDir: string): string {
-        return path.join(process.env.LOCALAPPDATA, MSFS_APPDATA_PATH, this.sanitize(targetDir));
-    }
-
-    static inPackagesSteam(targetDir: string): string {
-        return path.join(process.env.APPDATA, MSFS_STEAM_PATH, this.sanitize(targetDir));
+    static inPackages(targetDir: string): string {
+        return path.join(settings.get('mainSettings.msfsBasePath') as string, 'packages', this.sanitize(targetDir)).replace('LocalCache', 'LocalState')
     }
 
     static inPackageCache(addon: Addon, targetDir: string): string {
-        const baseDir = this.inPackagesSteam(this.sanitize(addon.targetDirectory));
+        const baseDir = this.inPackages(this.sanitize(addon.targetDirectory));
 
         return path.join(baseDir, this.sanitize(targetDir));
     }
