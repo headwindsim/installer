@@ -67,7 +67,7 @@ export class AddonData {
             .then(res => res.blob())
             .then(blob => blob.text())
             .then(stream => ({
-                name: 'v' + (yaml.load(stream) as {releases: Array<{name: string, date: Date}>}).releases[0].name,
+                name: (yaml.load(stream) as {releases: Array<{name: string, date: Date}>}).releases[0].name,
                 releaseDate: (yaml.load(stream) as {releases: Array<{name: string, date: Date}>}).releases[0].date.getTime(),
             }));
     }
