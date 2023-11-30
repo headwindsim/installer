@@ -63,7 +63,7 @@ export class AddonData {
     }
 
     private static async latestVersionForCDN(track: AddonTrack): Promise<ReleaseInfo> {
-        return fetch(track.url + '/releases.yaml')
+        return fetch(track.url + '/releases.yaml', {cache: "no-store"})
             .then(res => res.blob())
             .then(blob => blob.text())
             .then(stream => ({

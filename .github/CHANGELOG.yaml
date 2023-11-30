@@ -9,6 +9,14 @@
 
 
 releases:
+  - name: 1.4.7
+    changes:
+      - title: Disable caching for fetching release configuration 
+        categories: [ Core ]
+  - name: 1.4.6
+    changes:
+      - title: Update api-client
+        categories: [ Core ]
   - name: 1.4.5
     changes:
       - title: Removes 'v' prefix from Version Numbers

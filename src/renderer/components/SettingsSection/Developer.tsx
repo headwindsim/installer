@@ -14,7 +14,7 @@ const index = (): JSX.Element => {
 
     const validateUrl = () => {
         try {
-            fetch(configDownloadUrl)
+            fetch(configDownloadUrl, {cache: "no-store"})
                 .then((response) => {
                     setConfigDownloadUrlValid(response.status === 200);
                 });
