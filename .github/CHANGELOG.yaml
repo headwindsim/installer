@@ -9,6 +9,10 @@
 
 
 releases:
+  - name: 1.4.8
+    changes:
+      - title: Update dependencies
+        categories: [ Core ]
   - name: 1.4.7
     changes:
       - title: Disable caching for fetching release configuration 
