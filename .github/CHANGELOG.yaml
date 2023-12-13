@@ -9,7 +9,7 @@
 
 
 releases:
-  - name: 1.4.8
+  - name: 1.4.9
     changes:
       - title: Update dependencies
         categories: [ Core ]
