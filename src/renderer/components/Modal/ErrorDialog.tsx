@@ -98,10 +98,11 @@ export const ErrorDialog: FC<ErrorDialogProps> = ({ error, onAcknowledge }) => {
                 <div className="flex flex-col gap-y-5">
                     <div className="flex flex-col">
                         {errorVisualisation}
+                        <pre className="h-96 text-2xl bg-gray-800 p-2.5 rounded-md overflow-scroll">{error.stack}</pre>
                     </div>
 
                     <div className="flex flex-col">
-                    <p>Obtain support on <a onClick={handleOpenDiscordSupport}>Discord</a> and provide the error message and on request the sentry code:</p>
+                        <p>Obtain support on <a onClick={handleOpenDiscordSupport}>Discord</a> and provide the error message and on request the sentry code:</p>
                         <div
                             className="relative w-full flex justify-center items-center border-2 border-gray-800 text-3xl text-center p-3.5 rounded-md">
                             {showCopied ? (

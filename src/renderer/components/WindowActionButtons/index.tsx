@@ -1,5 +1,4 @@
 import React from 'react';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { shell } from 'electron';
 import { ipcRenderer } from 'electron';
 import { WindowsControl } from 'react-windows-controls';
@@ -8,6 +7,7 @@ import { Directories } from 'renderer/utils/Directories';
 import { store } from "renderer/redux/store";
 import { InstallStatusCategories } from "renderer/components/AddonSection/Enums";
 import { AlertModal, useModals } from "renderer/components/Modal";
+import { ExclamationCircle } from 'react-bootstrap-icons';
 
 export type ButtonProps = { id?: string, className?: string, onClick?: () => void, isClose?: boolean }
 
@@ -26,7 +26,7 @@ export const Button: React.FC<ButtonProps> = ({ id, className, onClick, isClose,
 export const WindowButtons: React.FC = () => {
     const { showModal } = useModals();
 
-    const openGithub = () => shell.openExternal("https://github.com/flybywiresim/a32nx/issues/new/choose");
+    const openGithub = () => shell.openExternal("https://discord.com/channels/965000103150645258/1159544006779346996");
 
     const handleMinimize = () => {
         ipcRenderer.send(channels.window.minimize);
@@ -53,6 +53,7 @@ export const WindowButtons: React.FC = () => {
 
     return (
         <div className="h-12 flex flex-row ml-auto">
+            <Button onClick={openGithub}><ExclamationCircle size={16} /></Button>
             <WindowsControl minimize whiteIcon onClick={handleMinimize} />
             <WindowsControl maximize whiteIcon onClick={handleMaximize} />
             <WindowsControl close whiteIcon onClick={handleClose} />
