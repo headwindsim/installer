@@ -9,6 +9,14 @@
 
 
 releases:
+  - name: 1.5.0
+    changes:
+      - title: Update UI
+        categories: [ UI ]
+      - title: Rework External Addons detection
+        categories: [ Core ]
+      - title: Update Core Code
+        categories: [ Core ]
   - name: 1.4.9
     changes:
       - title: Update dependencies
