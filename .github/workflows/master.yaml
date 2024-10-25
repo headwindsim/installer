@@ -7,7 +7,7 @@ jobs:
   build:
     # Prevent running this on forks
     if: github.repository_owner == 'headwindsim'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       MAIN_PRE_RELEASE_ID: 101378539
       MAIN_PRE_RELEASE_TAG: vmain
@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: '16.9'
+          node-version: '20.9'
       - name: Create .sentrydsn file
         run: |
           echo ${{ secrets.SENTRY_DSN_INSTALLER }} >> ./extraResources/.sentrydsn
@@ -29,13 +29,8 @@ jobs:
         run: npm ci
 
       - name: Install system requirements
-        run: |
-          sudo eatmydata apt-get install ppa-purge
-          sudo eatmydata ppa-purge -y ppa:ubuntu-toolchain-r/test
-
-          sudo dpkg --add-architecture i386
-          sudo apt update
-          sudo DEBIAN_FRONTEND=noninteractive eatmydata apt install -y --no-install-recommends wine-stable wine32 wine64
+        run: sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install -y --allow-downgrades libc6:i386 libgcc-s1:i386 libstdc++6:i386 && sudo apt-get install -y wine32 wine64
+        
       - name: Package installer
         run: |
           npm run package && rm -rf ./dist/win-unpacked/
