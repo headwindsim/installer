@@ -209,7 +209,7 @@ function initializeApp() {
 
   remote.initialize();
 
-  app.setAppUserModelId('FlyByWire Installer');
+  app.setAppUserModelId('Headwind Simulations Installer');
 
   let mainWindow: BrowserWindow;
 
