@@ -9,10 +9,14 @@
 
 
 releases:
+  - name: 1.5.2
+    changes:
+    - title: Fix issue with parsing of incorrect manifest.json of 3rd party addons
+      categories: [ CORE ]
   - name: 1.5.1
     changes:
-      - title: Fix Taskbar Issue with FBW Installer
-        categories: [ CORE ]
+    - title: Fix Taskbar Issue with FBW Installer
+      categories: [ CORE ]
   - name: 1.5.0
     changes:
       - title: Update UI

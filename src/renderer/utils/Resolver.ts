@@ -73,13 +73,17 @@ export class Resolver {
           const dirEntries = fs.readdirSync(filePath);
 
           if (dirEntries.includes(manifestFileName)) {
-            const manifest = JSON.parse(fs.readFileSync(path.join(filePath, manifestFileName), 'utf8'));
+            try {
+              const manifest = JSON.parse(fs.readFileSync(path.join(filePath, manifestFileName), 'utf8'));
 
-            const titleMatches = !title || manifest.title.toLowerCase() === title.toLowerCase();
-            const creatorMatches = !creator || manifest.creator.toLowerCase() === creator.toLowerCase();
-
-            if (titleMatches && creatorMatches) {
-              return true;
+              const titleMatches = !title || manifest.title.toLowerCase() === title.toLowerCase();
+              const creatorMatches = !creator || manifest.creator.toLowerCase() === creator.toLowerCase();
+              
+              if (titleMatches && creatorMatches) {
+                return true;
+              }              
+            } catch (e) {
+              console.warn(`Failed to read or parse manifest.json in ${filePath}:`, e.message);
             }
           }
         }
