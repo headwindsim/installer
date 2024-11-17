@@ -16,9 +16,9 @@ function initializeApp() {
   function createWindow() {
     // Create the browser window.
     mainWindow = new BrowserWindow({
-      width: 1280,
+      width: 1500,
       height: 800,
-      minWidth: 1280,
+      minWidth: 1500,
       minHeight: 800,
       frame: false,
       icon: 'src/main/icons/icon.ico',
