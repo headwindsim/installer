@@ -9,6 +9,10 @@
 
 
 releases:
+  - name: 1.5.3
+    changes:
+      - title: Update default app window size
+        categories: [ UI ]
   - name: 1.5.2
     changes:
     - title: Fix issue with parsing of incorrect manifest.json of 3rd party addons
