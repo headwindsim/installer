@@ -9,7 +9,7 @@
 
 
 releases:
-  - name: 1.5.4
+  - name: 1.5.3
     changes:
       - title: Added reload-button to developer configuration
         categories: [ Core ]
@@ -19,10 +19,6 @@ releases:
         categories: [ Core ]
       - title: update default app window size
         categories: [ Core ]
-  - name: 1.5.3
-    changes:
-      - title: Update default app window size
-        categories: [ UI ]
   - name: 1.5.2
     changes:
     - title: Fix issue with parsing of incorrect manifest.json of 3rd party addons
