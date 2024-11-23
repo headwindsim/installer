@@ -130,6 +130,13 @@ function initializeApp() {
 
     mainWindow.center();
 
+    if (
+        (settings.get('mainSettings.configDownloadUrl') as string) ===
+        'https://cdn.headwindsim.net/installer/config/hdw-internal.json'
+    ) {
+      settings.set('mainSettings.configDownloadUrl', packageInfo.configUrls.production);
+    }
+
     if (import.meta.env.DEV) {
       mainWindow.webContents.openDevTools();
     }
