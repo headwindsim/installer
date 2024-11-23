@@ -9,6 +9,16 @@
 
 
 releases:
+  - name: 1.5.4
+    changes:
+      - title: Added reload-button to developer configuration
+        categories: [ Core ]
+      - title: Reset-to-default button for developer configuration
+        categories: [ Core ]
+      - title: fix move people to new installer config url
+        categories: [ Core ]
+      - title: update default app window size
+        categories: [ Core ]
   - name: 1.5.3
     changes:
       - title: Update default app window size
