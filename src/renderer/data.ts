@@ -113,7 +113,7 @@ export const defaultConfiguration: Configuration = {
                 '\n\nAirframe for: [ACJ330-900](https://dispatch.simbrief.com/airframes/share/352855_1683790837791)',
               isExperimental: false,
               releaseModel: {
-                type: 'CDN',
+                type: 'fragmenter',
               },
             },
             {
@@ -128,7 +128,7 @@ export const defaultConfiguration: Configuration = {
                 '\n\nAirframe for: [ACJ330-900](https://dispatch.simbrief.com/airframes/share/352855_1683790837791)',
               isExperimental: false,
               releaseModel: {
-                type: 'CDN',
+                type: 'fragmenter',
               },
             }
           ],
@@ -138,23 +138,6 @@ export const defaultConfiguration: Configuration = {
               optional: true,
               modalText: 'SimBridge allows the A339X to expose remote tools like the Web MCDU, as well as use the external terrain database.',
             },
-          ],
-          incompatibleAddons: [
-            {
-              title: 'Toolbar Pushback',
-              creator: "AmbitiousPilots",
-              description: "This add-on sometimes causes performance issues and also sometimes prevents the A339X from taxiing. Consider removing it if you experience these issues.",
-            },
-            {
-              title: 'z-Newlight-settinglight-headwind-a330neo',
-              creator: 'Nicottine',
-              description: 'Before installing and utilizing the A339X, it is imperative to remove this add-on. This particular add-on overrides crucial light components, thereby disabling the functionality of cockpit lights and rendering the model inoperable.'
-            },
-            {
-              title: "Headwind A339X Weather Radar Mod",
-              creator: "",
-              description: "It is required to remove this add-on before installing and using the A339X. This add-on overrides A339X components may render the A339X unusable."
-            }
           ],
           myInstallPage: {
             links: [
@@ -212,14 +195,14 @@ export const defaultConfiguration: Configuration = {
             {
               name: 'Release',
               key: 'su95x-stable',
-              url: 'https://github.com/headwindsim/SU95X/releases/download/vstable/',
+              url: 'https://cdn.headwindsim.net/addons/su95x/release',
               alternativeUrls: [
                 'external/su95x/stable',
               ],
               description: 'Stable is our variant that is based on the FlyByWire A32NX stable version and has the fewest issues and best performance. This version won\'t always up-to-date, but we promise that it will work with all of MSFS\'s significant updates.',
               isExperimental: false,
               releaseModel: {
-                type: 'githubRelease',
+                type: 'fragmenter',
               },
             },
             {
@@ -231,7 +214,7 @@ export const defaultConfiguration: Configuration = {
                 'or incomplete features but is useful for testing and providing feedback to our developers.',
               isExperimental: false,
               releaseModel: {
-                type: 'CDN',
+                type: 'fragmenter',
               },
             },
 
@@ -241,13 +224,6 @@ export const defaultConfiguration: Configuration = {
               addon: '@headwindsim/simbridge',
               optional: true,
               modalText: 'SimBridge allows the SU95X to expose remote tools like the Web MCDU, as well as use the external terrain database.',
-            },
-          ],
-          incompatibleAddons: [
-            {
-              title: 'Toolbar Pushback',
-              creator: "AmbitiousPilots",
-              description: "This add-on sometimes causes performance issues and also sometimes prevents the SU95X from taxiing. Consider removing it if you experience these issues.",
             },
           ],
           myInstallPage: {
@@ -296,7 +272,7 @@ export const defaultConfiguration: Configuration = {
               description: 'This package includes liveries for AirBelgium, Condor (Beach, Island, and Sea variants), Corsair, Delta, Hifly, and TAP (Air Portugal and STAR Alliance variants), all carefully designed to match the real-life paint schemes of these airlines. Whether you\'re looking to simulate a transatlantic flight with Delta, a tropical getaway with Corsair, or a business trip with TAP, our liveries will help you fully immerse in your simulation experience.',
               isExperimental: false,
               releaseModel: {
-                type: 'CDN',
+                type: 'fragmenter',
               }
             }
           ],
@@ -350,7 +326,7 @@ export const defaultConfiguration: Configuration = {
               description: 'This package includes liveries for Aeroflot, Armavia, Azimuth, Interjet, RedWings and Yakutia, all carefully designed to match the real-life paint schemes of these airlines.',
               isExperimental: false,
               releaseModel: {
-                type: 'CDN',
+                type: 'fragmenter',
               },
             }
           ],
