@@ -47,7 +47,24 @@ export class Resolver {
       }
     }
 
-    const installedPackagesPath= await Directories.getInstalledPackagesPath();
+    await Directories.getInstalledPackagesPath().then((installedPackagesPath) => {
+      console.log(`InstalledPackagesPath: ${installedPackagesPath}`);
+      console.log('Searching in Offical Packages Directory...');
+
+      const isFound = this.findInInstallPath(installedPackagesPath, publisherKey, addonKey);
+      if(isFound) {
+        console.log('Found in Official Packages Directory');
+        return true;
+      }
+
+      console.log('Not found');
+      return false;
+    }).catch((err) => {
+      console.error(err);
+    });
+       
+    /*
+    const installedPackagesPath= await Directories.getInstalledPackagesPath()  
     console.log(`InstalledPackagesPath: ${installedPackagesPath}`);
     console.log('Searching in Offical Packages Directory...');
 
@@ -59,6 +76,7 @@ export class Resolver {
 
     console.log('Not found');
     return false;
+    */
   }
 
   private static findInInstallPath(installPath: string, creator?: string, title?: string) {

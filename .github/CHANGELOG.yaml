@@ -9,6 +9,10 @@
 
 
 releases:
+  - name: 1.5.4
+    changes:
+      - title: Fix Installer freeze when external addon could not be found
+        categories: [ Core ]
   - name: 1.5.3
     changes:
       - title: Added reload-button to developer configuration
