@@ -9,8 +9,12 @@
 
 
 releases:
-  - name: 1.5.4
+  - name: 1.6.0
     changes:
+      - title: Add Feature Auto-Start with MSFS for supported Add-Ons
+        categories: [ Core ]
+      - title: Fix Install Progress Above 100%
+        categories: [ Core ]
       - title: Fix Installer freeze when external addon could not be found
         categories: [ Core ]
   - name: 1.5.3
