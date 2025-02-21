@@ -34,20 +34,42 @@ export class Resolver {
   }
   
   public static async findExternalAddon(publisherKey: string, addonKey: string): Promise<boolean> {
-    console.log('Searching for external addon');
+    return new Promise(async (resolve, reject) => {
+      console.log('Searching for external addon');
 
-    console.log('Searching in Community Directory...');
-    const comDir = Directories.communityLocation();
-    if(fs.existsSync(comDir)) {
-      console.log(`CommunityInstalledPackagesPath: ${comDir}`);
-      const isFound = this.findInInstallPath(comDir, publisherKey, addonKey);
-      if(isFound) {
-        console.log('Found in Community Directory');
-        return true;
+      console.log('Searching in Community Directory...');
+      const comDir = Directories.communityLocation();
+      if (fs.existsSync(comDir)) {
+        console.log(`CommunityInstalledPackagesPath: ${comDir}`);
+        const isFound = this.findInInstallPath(comDir, publisherKey, addonKey);
+        if (isFound) {
+          console.log('Found in Community Directory');
+          return resolve(true);
+        }
       }
-    }
 
-    const installedPackagesPath= await Directories.getInstalledPackagesPath();
+      await Directories.getInstalledPackagesPath().then((installedPackagesPath) => {
+        console.log(`InstalledPackagesPath: ${installedPackagesPath}`);
+        console.log('Searching in Offical Packages Directory...');
+
+        const isFound = this.findInInstallPath(installedPackagesPath, publisherKey, addonKey);
+        if (isFound) {
+          console.log('Found in Official Packages Directory');
+          return resolve(true);
+        }
+
+        console.log('Not found');
+        return resolve(false);
+      }).catch((err) => {
+        console.error(err);
+      });
+    });
+    
+
+    
+       
+    /*
+    const installedPackagesPath= await Directories.getInstalledPackagesPath()  
     console.log(`InstalledPackagesPath: ${installedPackagesPath}`);
     console.log('Searching in Offical Packages Directory...');
 
@@ -59,6 +81,7 @@ export class Resolver {
 
     console.log('Not found');
     return false;
+    */
   }
 
   private static findInInstallPath(installPath: string, creator?: string, title?: string) {

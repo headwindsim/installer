@@ -1,5 +1,10 @@
 import React, { FC } from 'react';
-import { setupMsfsCommunityPath, setupInstallPath, setupTempLocation } from 'renderer/actions/install-path.utils';
+import {
+  setupMsfsCommunityPath,
+  setupInstallPath,
+  setupTempLocation,
+  setupMsfsBasePath
+} from 'renderer/actions/install-path.utils';
 import settings, { useSetting } from 'renderer/rendererSettings';
 import { Toggle } from '../Toggle';
 

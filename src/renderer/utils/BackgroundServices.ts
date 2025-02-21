@@ -187,6 +187,7 @@ export class BackgroundServices {
         },
       };
     }
+    
     if(!base["SimBase.Document"])
       base["SimBase.Document"] = {
           Descr: 'Launch',
@@ -199,6 +200,7 @@ export class BackgroundServices {
         };
     if(!base["SimBase.Document"]["Launch.Addon"])
       base["SimBase.Document"]["Launch.Addon"] = [];
+
 
     base['SimBase.Document']['Launch.Addon'] = base['SimBase.Document']['Launch.Addon'].filter(
       (e) => e.Name !== addon.key,

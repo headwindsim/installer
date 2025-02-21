@@ -31,7 +31,12 @@ export class Directories {
   static getInstalledPackagesPath(): Promise<string> {
     return new Promise((resolve, reject) => {
       let msfsBasePath = this.msfsBasePath();
-
+      
+      if(!fs.existsSync(msfsBasePath)) {
+        reject(`msfsBasePath is not found: ${msfsBasePath}`);
+        return;
+      }      
+      
       const msfsConfigPath = path.join(msfsBasePath, 'UserCfg.opt');
       fs.readFile(msfsConfigPath, 'utf8', (err, data) => {
         if (err) {
