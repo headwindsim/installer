@@ -9,6 +9,11 @@
 
 
 releases:
+  - name: 1.6.2
+    changes:
+    - title: Fix Parsing of EXE.xml
+      categories: [ Core ]
+      authors: [Liz3]
   - name: 1.6.0
     changes:
       - title: Add Feature Auto-Start with MSFS for supported Add-Ons
