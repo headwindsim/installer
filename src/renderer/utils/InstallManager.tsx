@@ -430,7 +430,7 @@ export class InstallManager {
                   module: module.name,
                   progress: {
                     interrupted: false,
-                    totalPercent: progress.percent,
+                    totalPercent: progress.percent > 100 ? Math.floor((progress.partLoaded / progress.partTotal) * 100) : progress.percent,
                     splitPartPercent: progress.partPercent,
                     splitPartIndex: progress.partIndex,
                     splitPartCount: progress.numParts,
