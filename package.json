@@ -117,6 +117,7 @@
     "dateformat": "^5.0.1",
     "electron-store": "^8.0.1",
     "electron-updater": "^4.3.9",
+    "fast-xml-parser": "^5.0.6",
     "fs-extra": "^8.1.0",
     "immer": "^10.0.4",
     "js-yaml": "^4.1.0",

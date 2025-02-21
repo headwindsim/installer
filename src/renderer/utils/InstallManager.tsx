@@ -566,6 +566,10 @@ export class InstallManager {
       this.setCurrentlyInstalledTrack(addon, track);
       this.setCurrentInstallState(addon, { status: InstallStatus.DownloadDone });
 
+      if(addon.backgroundService && addon.backgroundService.simulatorAutoStart) {
+         await BackgroundServices.installToSimStart(addon, true);
+      }
+
       // If we have a background service, ask if we want to enable it
       if (addon.backgroundService && (addon.backgroundService.enableAutostartConfiguration ?? true)) {
         const app = BackgroundServices.getExternalAppFromBackgroundService(addon, publisher);
@@ -664,6 +668,10 @@ export class InstallManager {
     // Remove autostart of the background service if the addon has one
     if (addon.backgroundService && (addon.backgroundService.enableAutostartConfiguration ?? true)) {
       await BackgroundServices.setAutoStartEnabled(addon, publisher, false);
+    }
+
+    if (addon.backgroundService && (addon.backgroundService.simulatorAutoStart ?? false)) {
+      await BackgroundServices.installToSimStart(addon, false);
     }
 
     const installDir = Directories.inInstallLocation(addon.targetDirectory);

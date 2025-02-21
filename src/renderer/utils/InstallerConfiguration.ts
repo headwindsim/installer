@@ -81,6 +81,8 @@ export interface AddonBackgroundService {
    */
   enableAutostartConfiguration?: boolean;
 
+  simulatorAutoStart?: boolean;
+
   /**
    * Command line arguments to run this background service with
    *
