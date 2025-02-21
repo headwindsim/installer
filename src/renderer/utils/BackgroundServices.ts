@@ -6,9 +6,17 @@ import { ExternalApps } from 'renderer/utils/ExternalApps';
 import path from 'path';
 import { Directories } from 'renderer/utils/Directories';
 import { shell } from '@electron/remote';
-import { promises } from 'fs';
+import { promises, constants as fsconstants  } from 'fs';
+import { XMLParser, XMLBuilder } from 'fast-xml-parser';
+
 
 export const STARTUP_FOLDER_PATH = 'Microsoft\\Windows\\Start Menu\\Programs\\Startup\\';
+
+function fileExists(file) {
+  return promises.access(file, fsconstants.F_OK)
+           .then(() => true)
+           .catch(() => false)
+}
 
 export class BackgroundServices {
   private static validateExecutablePath(path: string): boolean {
@@ -138,6 +146,64 @@ export class BackgroundServices {
     // const commandLineArgs = backgroundService.commandLineArgs ?? [];
     //
     // spawn(exePath, commandLineArgs, { cwd: Directories.inCommunity(addon.targetDirectory), shell: true, detached: true });
+  }
+
+  static async installToSimStart(addon: Addon, install: boolean): Promise<void> {
+    const backgroundService = addon.backgroundService;
+
+    if (!backgroundService) {
+      throw new Error('Addon has no background service');
+    }
+
+    if (!this.validateExecutablePath(backgroundService.executableFileBasename)) {
+      throw new Error('Executable path much match /^[a-zA-Z\\d_-]+$/.');
+    }
+    const executablePath = path.normalize(
+      path.join(
+        Directories.inInstallLocation(addon.targetDirectory),
+        `${backgroundService.executableFileBasename}.exe`,
+      ),
+    );
+    const exePath = path.join(Directories.msfsBasePath(), 'exe.xml');
+    let base;
+    if (await fileExists(exePath)) {
+      const content = await promises.readFile(exePath, 'utf-8');
+      const parser = new XMLParser({ ignoreAttributes: false, unpairedTags: ['?xml'] });
+      base = parser.parse(content);
+    } else {
+      if (!install) {
+        return;
+      }
+      base = {
+        '?xml': { '@_version': '1.0', '@_encoding': 'utf-8' },
+        'SimBase.Document': {
+          Descr: 'Launch',
+          Filename: 'EXE.xml',
+          Disabled: 'False',
+          'Launch.ManualLoad': 'False',
+          'Launch.Addon': [],
+          '@_Type': 'Launch',
+          '@_version': '1,0',
+        },
+      };
+    }
+    base['SimBase.Document']['Launch.Addon'] = base['SimBase.Document']['Launch.Addon'].filter(
+      (e) => e.Name !== addon.key,
+    );
+    if (install) {
+      base['SimBase.Document']['Launch.Addon'].push({
+        Disabled: 'False',
+        ManualLoad: 'False',
+        Name: addon.key,
+        Path: executablePath,
+      });
+    }
+    const builder = new XMLBuilder({
+      format: true,
+      ignoreAttributes: false,
+    });
+    const xmlOutput = builder.build(base);
+    await promises.writeFile(exePath, xmlOutput);
   }
 
   static async kill(addon: Addon, publisher: Publisher): Promise<void> {

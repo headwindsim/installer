@@ -1,7 +1,7 @@
 {
   "name": "headwind-installer",
   "productName": "Headwind Simulations Installer",
-  "version": "1.5.4-dev.1",
+  "version": "1.6.0-dev.1",
   "description": "Desktop application to install and customize Headwind Simulation addons",
   "configUrls": {
     "production": "https://cdn.headwindsim.net/installer/config/production.json",
@@ -117,6 +117,7 @@
     "dateformat": "^5.0.1",
     "electron-store": "^8.0.1",
     "electron-updater": "^4.3.9",
+    "fast-xml-parser": "^5.0.6",
     "fs-extra": "^8.1.0",
     "immer": "^10.0.4",
     "js-yaml": "^4.1.0",
