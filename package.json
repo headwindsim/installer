@@ -1,7 +1,7 @@
 {
   "name": "headwind-installer",
   "productName": "Headwind Simulations Installer",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "Desktop application to install and customize Headwind Simulation addons",
   "configUrls": {
     "production": "https://cdn.headwindsim.net/installer/config/production.json",

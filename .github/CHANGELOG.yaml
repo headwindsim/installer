@@ -9,6 +9,11 @@
 
 
 releases:
+  - name: 1.6.3
+    changes:
+    - title: Fix Stuck on Install when not finding UserCfg.opt in MSFS Base Path
+      categories: [ Core ]
+      authors: [Revyn]
   - name: 1.6.2
     changes:
     - title: Fix Parsing of EXE.xml
