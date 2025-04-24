@@ -7,7 +7,7 @@ jobs:
   build:
     # Prevent running this on forks
     if: github.repository_owner == 'headwindsim'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     env:
       MAIN_PRE_RELEASE_ID: 101378539
       MAIN_PRE_RELEASE_TAG: vmain
@@ -15,8 +15,8 @@ jobs:
       ASSET_NAME: Headwind_Installer_Setup.exe
     steps:
       - name: Checkout source
-        uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+        uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20.9'
       - name: Create .sentrydsn file
