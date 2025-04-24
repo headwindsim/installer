@@ -62,6 +62,7 @@ export class Resolver {
         return resolve(false);
       }).catch((err) => {
         console.error(err);
+        return resolve(false);
       });
     });
     
