@@ -11,14 +11,15 @@ jobs:
     # Prevent running this on forks
     if: github.repository_owner == 'headwindsim'
     name: Upload Release Asset
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     env:
       ASSET_PATH: dist/Headwind_Installer_Setup.exe
       ASSET_DIRECTORY: dist/
       ASSET_NAME: Headwind_Installer_Setup.exe
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20.9'
 
