@@ -261,7 +261,7 @@ export const defaultConfiguration: Configuration = {
           enabled: true,
           backgroundImageUrls: ['https://raw.githubusercontent.com/headwindsim/branding/main/images/A339X/livery_package_1.png'],
           shortDescription: 'A339X Livery Package',
-          description: 'This package includes liveries for AirBelgium, Condor (Beach, Island, and Sea variants), Corsair, Delta, Hifly, and TAP (Air Portugal and STAR Alliance variants), all carefully designed to match the real-life paint schemes of these airlines. Whether you\'re looking to simulate a transatlantic flight with Delta, a tropical getaway with Corsair, or a business trip with TAP, our liveries will help you fully immerse in your simulation experience.',
+          description: 'This package includes liveries for AirBelgium, Condor (Beach, Island, and Sea variants), Corsair, Delta, Hifly, Malaysia Airlines, and TAP (Air Portugal and STAR Alliance variants), all carefully designed to match the real-life paint schemes of these airlines. Whether you\'re looking to simulate a transatlantic flight with Delta, a tropical getaway with Corsair, or a business trip with TAP, our liveries will help you fully immerse in your simulation experience.',
           targetDirectory: 'headwindsim-a339x-livery-package',
           alternativeNames: [],
           tracks: [
@@ -269,7 +269,7 @@ export const defaultConfiguration: Configuration = {
               name: 'Release',
               key: 'a339x-livery-release',
               url: 'https://cdn.headwindsim.net/addons/a339x-livery-package/release',
-              description: 'This package includes liveries for AirBelgium, Condor (Beach, Island, and Sea variants), Corsair, Delta, Hifly, and TAP (Air Portugal and STAR Alliance variants), all carefully designed to match the real-life paint schemes of these airlines. Whether you\'re looking to simulate a transatlantic flight with Delta, a tropical getaway with Corsair, or a business trip with TAP, our liveries will help you fully immerse in your simulation experience.',
+              description: 'This package includes liveries for AirBelgium, Condor (Beach, Island, and Sea variants), Corsair, Delta, Hifly, Malaysia Airlines, and TAP (Air Portugal and STAR Alliance variants), all carefully designed to match the real-life paint schemes of these airlines. Whether you\'re looking to simulate a transatlantic flight with Delta, a tropical getaway with Corsair, or a business trip with TAP, our liveries will help you fully immerse in your simulation experience.',
               isExperimental: false,
               releaseModel: {
                 type: 'fragmenter',
@@ -315,7 +315,7 @@ export const defaultConfiguration: Configuration = {
           enabled: true,
           backgroundImageUrls: ['https://raw.githubusercontent.com/headwindsim/branding/main/images/SU95X/livery_package.png'],
           shortDescription: 'SU95X Livery Package',
-          description: 'This package includes liveries for Aeroflot, Armavia, Azimuth, Interjet, RedWings and Yakutia, all carefully designed to match the real-life paint schemes of these airlines.',
+          description: 'This package includes liveries for Aeroflot, Armavia, Azimuth, Interjet, RedWings, and Yakutia, all carefully designed to match the real-life paint schemes of these airlines.',
           targetDirectory: 'headwindsim-su95x-livery-package',
           alternativeNames: [],
           tracks: [
@@ -323,7 +323,7 @@ export const defaultConfiguration: Configuration = {
               name: 'Release',
               key: 'su95x-livery-release',
               url: 'https://cdn.headwindsim.net/addons/su95x-livery-package/release',
-              description: 'This package includes liveries for Aeroflot, Armavia, Azimuth, Interjet, RedWings and Yakutia, all carefully designed to match the real-life paint schemes of these airlines.',
+              description: 'This package includes liveries for Aeroflot, Armavia, Azimuth, Interjet, RedWings, and Yakutia, all carefully designed to match the real-life paint schemes of these airlines.',
               isExperimental: false,
               releaseModel: {
                 type: 'fragmenter',
