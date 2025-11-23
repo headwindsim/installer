@@ -1,7 +1,6 @@
 #!/bin/bash
 
 CDN_URL="https://cdn.headwindsim.net"
-CDN_PURGE_LINK="https://cdn.headwindsim.net/purgeCache?url=https://cdn.headwindsim.net"
 CDN_DIR=${1:-"installer/test"}
 LOCAL_DIR=${2:-"./dist"}
 
@@ -31,9 +30,46 @@ done
 
 # Purge after all uploads that the files are somewhat in sync
 echo "Purging cache"
-for FILE in "${LOCAL_DIR}"/*; do
-    DEST="$CDN_PURGE_LINK/$CDN_DIR/$(basename -- "$FILE")"
-    echo "Purging cache for file: $FILE"
-    echo "Purge URL: $DEST"
-    curl -X GET -H "X-HDW-Access-Key: $CLOUDFLARE_WORKER_PASSWORD" -H "Content-Length: 0" "$DEST"
+
+# Check if required environment variables are set
+if [ -z "$CLOUDFLARE_CDN_ZONE_ID" ]; then
+    echo "Error: CLOUDFLARE_CDN_ZONE_ID environment variable is not set"
+    exit 1
+fi
+
+if [ -z "$CLOUDFLARE_PURGE_TOKEN" ]; then
+    echo "Error: CLOUDFLARE_PURGE_TOKEN environment variable is not set"
+    exit 1
+fi
+
+# Build array of URLs to purge
+PURGE_URLS=()
+for FILE in "${FILES}"/*; do
+    FILE_URL="$CDN_URL/$CDN_DIR/$(basename -- "$FILE")"
+    PURGE_URLS+=("$FILE_URL")
+    echo "Will purge: $FILE_URL"
 done
+
+# Create JSON payload for Cloudflare API
+PURGE_JSON=$(jq -n --argjson urls "$(printf '%s\n' "${PURGE_URLS[@]}" | jq -R . | jq -s .)" '{files: $urls}')
+
+echo "Purging cache via Cloudflare API"
+echo "JSON payload: $PURGE_JSON"
+
+# Call Cloudflare API to purge cache
+PURGE_RESPONSE=$(curl -s -X POST \
+    -H "Authorization: Bearer $CLOUDFLARE_PURGE_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d "$PURGE_JSON" \
+    "https://api.cloudflare.com/client/v4/zones/$CLOUDFLARE_CDN_ZONE_ID/purge_cache")
+
+echo "Purge response: $PURGE_RESPONSE"
+
+# Check if purge was successful
+if echo "$PURGE_RESPONSE" | grep -q '"success":true'; then
+    echo "Cache purge successful"
+else
+    echo "Cache purge failed"
+    echo "Response: $PURGE_RESPONSE"
+    exit 1
+fi
