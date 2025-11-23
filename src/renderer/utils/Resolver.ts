@@ -9,6 +9,7 @@ import { store } from 'renderer/redux/store';
 import {Directories} from "renderer/utils/Directories";
 import fs from 'fs';
 import path from 'path';
+import {TypeOfSimulator} from "renderer/utils/SimManager";
 
 const _cache: { [k: string]: Definition } = {};
 
@@ -33,12 +34,12 @@ export class Resolver {
     return publisher.addons.find((it) => it.key === addonKey);
   }
   
-  public static async findExternalAddon(publisherKey: string, addonKey: string): Promise<boolean> {
+  public static async findExternalAddon(sim: TypeOfSimulator, publisherKey: string, addonKey: string): Promise<boolean> {
     return new Promise(async (resolve, reject) => {
       console.log('Searching for external addon');
 
       console.log('Searching in Community Directory...');
-      const comDir = Directories.communityLocation();
+      const comDir = Directories.communityLocation(sim);
       if (fs.existsSync(comDir)) {
         console.log(`CommunityInstalledPackagesPath: ${comDir}`);
         const isFound = this.findInInstallPath(comDir, publisherKey, addonKey);
@@ -48,7 +49,7 @@ export class Resolver {
         }
       }
 
-      await Directories.getInstalledPackagesPath().then((installedPackagesPath) => {
+      await Directories.getInstalledPackagesPath(sim).then((installedPackagesPath) => {
         console.log(`InstalledPackagesPath: ${installedPackagesPath}`);
         console.log('Searching in Offical Packages Directory...');
 
@@ -66,9 +67,6 @@ export class Resolver {
       });
     });
     
-
-    
-       
     /*
     const installedPackagesPath= await Directories.getInstalledPackagesPath()  
     console.log(`InstalledPackagesPath: ${installedPackagesPath}`);

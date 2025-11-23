@@ -1,5 +1,4 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { setupInstallPath } from 'renderer/actions/install-path.utils';
 import { DownloadItem } from 'renderer/redux/types';
 import { useSelector } from 'react-redux';
 import { InstallerStore, useAppDispatch, useAppSelector } from '../../redux/store';
@@ -25,6 +24,7 @@ import { StateSection } from 'renderer/components/AddonSection/StateSection';
 import { ExternalApps } from 'renderer/utils/ExternalApps';
 import { MyInstall } from 'renderer/components/AddonSection/MyInstall';
 import rehypeRaw from 'rehype-raw';
+import { Simulators } from 'renderer/utils/SimManager';
 
 const abortControllers = new Array<AbortController>(20);
 abortControllers.fill(new AbortController());
@@ -37,11 +37,11 @@ interface InstallButtonProps {
 }
 
 export const SidebarButton: FC<InstallButtonProps> = ({
-  type = ButtonType.Neutral,
-  disabled = false,
-  onClick,
-  children,
-}) => (
+                                                        type = ButtonType.Neutral,
+                                                        disabled = false,
+                                                        onClick,
+                                                        children,
+                                                      }) => (
   <Button type={type} disabled={disabled} className={`w-64`} onClick={onClick}>
     {children}
   </Button>
@@ -70,6 +70,7 @@ export interface AircraftSectionURLParams {
 export const AddonSection = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const history = useHistory();
+  const [managedSim] = useSetting<Simulators>('cache.main.managedSim');
 
   const { publisherName } = useParams<AircraftSectionURLParams>();
   const publisherData = useAppSelector((state) =>
@@ -108,7 +109,9 @@ export const AddonSection = (): JSX.Element => {
   }, [history, publisherData.addons, publisherName, selectedAddon]);
 
   useEffect(() => {
-    const firstAvailableAddon = publisherData.addons.find((addon) => addon.enabled);
+    const firstAvailableAddon = publisherData.addons
+      .filter((addon) => addon.simulator === managedSim)
+      .find((addon) => addon.enabled);
 
     if (!firstAvailableAddon) {
       history.push(`/addon-section/${publisherName}/no-available-addons`);
@@ -117,11 +120,13 @@ export const AddonSection = (): JSX.Element => {
 
     const lastSeenAddonKey = settings.get('cache.main.lastShownAddonKey');
     const addonToSelect =
-      publisherData.addons.find((addon) => addon.key === lastSeenAddonKey) ||
+      publisherData.addons
+        .filter((addon) => addon.simulator === managedSim)
+        .find((addon) => addon.key === lastSeenAddonKey) ||
       publisherData.addons.find((addon) => addon.key === firstAvailableAddon.key);
 
     setSelectedAddon(addonToSelect);
-  }, [history, publisherData.addons, publisherName]);
+  }, [history, publisherData.addons, publisherName, managedSim]);
 
   const installedTrack = (installedTracks[selectedAddon.key] as AddonTrack) ?? null;
 
@@ -227,11 +232,7 @@ export const AddonSection = (): JSX.Element => {
   };
 
   const handleInstall = async () => {
-    if (settings.has('mainSettings.installPath')) {
-      await InstallManager.installAddon(selectedAddon, publisherData, showModalAsync);
-    } else {
-      await setupInstallPath();
-    }
+    await InstallManager.installAddon(selectedAddon, publisherData, showModalAsync);
   };
 
   const handleCancel = useCallback(() => {
@@ -271,11 +272,12 @@ export const AddonSection = (): JSX.Element => {
 
   return (
     <div className="flex size-full flex-row">
-      <div className="z-40 h-full flex-none bg-navy-medium" style={{ width: '32rem' }}>
+      <div className="z-40 h-full flex-none bg-navy-medium" style={{ width: '29rem' }}>
         <div className="flex h-full flex-col divide-y divide-gray-700">
           <AddonBar>
             <div className="flex flex-col gap-y-4">
               {publisherData.addons
+                .filter((it) => it.simulator === managedSim)
                 .filter((it) => !it.category)
                 .map((addon) => (
                   <AddonBarItem
@@ -296,9 +298,9 @@ export const AddonSection = (): JSX.Element => {
               {publisherData.defs
                 ?.filter((it) => it.kind === 'addonCategory')
                 .map((category: AddonCategoryDefinition) => {
-                  const categoryAddons = publisherData.addons.filter(
-                    (it) => it.category?.substring(1) === category.key,
-                  );
+                  const categoryAddons = publisherData.addons
+                    .filter((it) => it.simulator === managedSim)
+                    .filter((it) => it.category?.substring(1) === category.key);
 
                   if (categoryAddons.length === 0) {
                     return null;
@@ -315,6 +317,7 @@ export const AddonSection = (): JSX.Element => {
 
                       <div className="flex flex-col gap-y-4">
                         {publisherData.addons
+                          .filter((it) => it.simulator === managedSim)
                           .filter((it) => it.category?.substring(1) === category.key)
                           .map((addon) => (
                             <AddonBarItem
@@ -380,10 +383,10 @@ export const AddonSection = (): JSX.Element => {
                   <Route
                     path={`/addon-section/:publisher/main/configure/:aspectKey`}
                     render={({
-                      match: {
-                        params: { aspectKey },
-                      },
-                    }) => (
+                               match: {
+                                 params: { aspectKey },
+                               },
+                             }) => (
                       <Configure
                         routeAspectKey={aspectKey}
                         selectedAddon={selectedAddon}

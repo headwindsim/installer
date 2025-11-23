@@ -8,14 +8,15 @@ import { Directories } from 'renderer/utils/Directories';
 import { shell } from '@electron/remote';
 import { promises, constants as fsconstants  } from 'fs';
 import { XMLParser, XMLBuilder } from 'fast-xml-parser';
+import {TypeOfSimulator} from "renderer/utils/SimManager";
 
 
 export const STARTUP_FOLDER_PATH = 'Microsoft\\Windows\\Start Menu\\Programs\\Startup\\';
 
-function fileExists(file) {
-  return promises.access(file, fsconstants.F_OK)
-           .then(() => true)
-           .catch(() => false)
+async function fileExists(file: any): Promise<boolean> {
+  return await promises.access(file, fsconstants.F_OK)
+    .then(() => true)
+    .catch(() => false)
 }
 
 export class BackgroundServices {
@@ -91,7 +92,7 @@ export class BackgroundServices {
     }
 
     const exePath = path.join(
-      Directories.inInstallLocation(addon.targetDirectory),
+      Directories.inInstallLocation(addon.simulator, addon.targetDirectory),
       backgroundService.executableFileBasename,
     );
     const commandLineArgs = backgroundService.commandLineArgs ? ` ${backgroundService.commandLineArgs.join(' ')}` : '';
@@ -132,7 +133,7 @@ export class BackgroundServices {
 
     const exePath = path.normalize(
       path.join(
-        Directories.inInstallLocation(addon.targetDirectory),
+        Directories.inInstallLocation(addon.simulator, addon.targetDirectory),
         `${backgroundService.executableFileBasename}.exe`,
       ),
     );
@@ -147,7 +148,7 @@ export class BackgroundServices {
     //
     // spawn(exePath, commandLineArgs, { cwd: Directories.inCommunity(addon.targetDirectory), shell: true, detached: true });
   }
-
+  
   static async installToSimStart(addon: Addon, install: boolean): Promise<void> {
     const backgroundService = addon.backgroundService;
 
@@ -160,11 +161,13 @@ export class BackgroundServices {
     }
     const executablePath = path.normalize(
       path.join(
-        Directories.inInstallLocation(addon.targetDirectory),
+        Directories.inInstallLocation(addon.simulator, addon.targetDirectory),
         `${backgroundService.executableFileBasename}.exe`,
       ),
     );
-    const exePath = path.join(Directories.msfsBasePath(), 'exe.xml');
+
+    const basePath = Directories.simulatorBasePath(addon.simulator);    
+    const exePath = path.join(basePath, 'exe.xml');
     let base;
     if (await fileExists(exePath)) {
       const content = await promises.readFile(exePath, 'utf-8');
@@ -204,7 +207,7 @@ export class BackgroundServices {
       base['SimBase.Document']['Launch.Addon'] = [base['SimBase.Document']['Launch.Addon']];
 
     base['SimBase.Document']['Launch.Addon'] = base['SimBase.Document']['Launch.Addon'].filter(
-      (e) => e.Name !== addon.key,
+      (e: any) => e.Name !== addon.key,
     );
     if (install) {
       base['SimBase.Document']['Launch.Addon'].push({
@@ -221,7 +224,7 @@ export class BackgroundServices {
     const xmlOutput = builder.build(base);
     await promises.writeFile(exePath, xmlOutput);
   }
-
+  
   static async kill(addon: Addon, publisher: Publisher): Promise<void> {
     const app = this.getExternalAppFromBackgroundService(addon, publisher);
 

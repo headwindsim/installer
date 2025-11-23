@@ -1,8 +1,9 @@
 import path from 'path';
-import { Addon } from 'renderer/utils/InstallerConfiguration';
+import {Addon} from 'renderer/utils/InstallerConfiguration';
 import fs from 'fs';
-import settings, { msStoreBasePath, steamBasePath } from 'renderer/rendererSettings';
-import { app } from '@electron/remote';
+import settings from 'renderer/rendererSettings';
+import {app} from '@electron/remote';
+import {Simulators, TypeOfSimulator} from './SimManager';
 
 const TEMP_DIRECTORY_PREFIX = 'headwind-current-install';
 
@@ -20,23 +21,88 @@ export class Directories {
     return path.join(app.getPath('appData'), '..', 'Local');
   }
 
-  static msfsBasePath(): string {
-    return settings.get('mainSettings.msfsBasePath') as string;
+  static osTemp(): string {
+    return app.getPath('temp');
   }
 
-  static communityLocation(): string {
-    return settings.get('mainSettings.msfsCommunityPath') as string;
+  static simulatorBasePath(sim: TypeOfSimulator): string | null {
+    return settings.get(`mainSettings.simulator.${sim}.basePath`);
   }
 
-  static getInstalledPackagesPath(): Promise<string> {
+  static communityLocation(sim: TypeOfSimulator): string | null {
+    return settings.get(`mainSettings.simulator.${sim}.communityPath`);
+  }
+
+  static inCommunityLocation(sim: TypeOfSimulator, targetDir: string): string | null {
+    const communityPath = Directories.communityLocation(sim);
+    if (!communityPath) return null;
+    return path.join(communityPath, this.sanitize(targetDir));
+  }
+
+  static inCommunityPackage(addon: Addon, targetDir: string): string | null {
+    const baseDir = this.inCommunityLocation(addon.simulator, this.sanitize(addon.targetDirectory));
+    return path.join(baseDir, this.sanitize(targetDir));
+  }
+
+  static installLocation(sim: TypeOfSimulator): string | null {
+    return settings.get(`mainSettings.simulator.${sim}.installPath`);
+  }
+
+  static inInstallLocation(sim: TypeOfSimulator, targetDir: string): string | null {
+    const installPath = this.installLocation(sim);
+    if (!installPath) return null;
+    return path.join(installPath, this.sanitize(targetDir));
+  }
+
+  static inInstallPackage(addon: Addon, targetDir: string): string | null {
+    const baseDir = this.inInstallLocation(addon.simulator, this.sanitize(addon.targetDirectory));
+    if (!baseDir) return null;
+    return path.join(baseDir, this.sanitize(targetDir));
+  }
+
+  static tempLocation(sim: TypeOfSimulator): string {
+    return settings.get('mainSettings.separateTempLocation')
+      ? settings.get('mainSettings.tempLocation')
+      : this.installLocation(sim);
+  }
+
+  static inTempLocation(sim: TypeOfSimulator, targetDir: string): string {
+    return path.join(Directories.tempLocation(sim), this.sanitize(targetDir));
+  }
+
+  static inPackages(sim: TypeOfSimulator, targetDir: string): string {
+    return path
+      .join(this.simulatorBasePath(sim), 'packages', this.sanitize(targetDir))
+      .replace('LocalCache', 'LocalState');
+  }
+
+  static inPackageCache(addon: Addon, targetDir: string): string {
+    const baseDir = this.inPackages(addon.simulator, this.sanitize(addon.targetDirectory));
+
+    return path.join(baseDir, this.sanitize(targetDir));
+  }
+
+  static temp(sim: TypeOfSimulator): string {
+    const dir = path.join(
+      Directories.tempLocation(sim),
+      `${TEMP_DIRECTORY_PREFIX}-${(Math.random() * 1000).toFixed(0)}`,
+    );
+    if (fs.existsSync(dir)) {
+      return Directories.temp(sim);
+    }
+    return dir;
+  }
+  
+  static getInstalledPackagesPath(sim: TypeOfSimulator): Promise<string> {
     return new Promise((resolve, reject) => {
-      let msfsBasePath = this.msfsBasePath();
-      
+      let msfsBasePath = this.simulatorBasePath(sim);
+      console.log(msfsBasePath);
+
       if(!fs.existsSync(msfsBasePath)) {
         reject(`msfsBasePath is not found: ${msfsBasePath}`);
         return;
-      }      
-      
+      }
+
       const msfsConfigPath = path.join(msfsBasePath, 'UserCfg.opt');
       fs.readFile(msfsConfigPath, 'utf8', (err, data) => {
         if (err) {
@@ -47,108 +113,91 @@ export class Directories {
         const match = data.match(regex);
         if (match && match[1]) {
           const pathValue = match[1];
-          const steamPathFinal = path.join(pathValue, 'Official', 'Steam');
-          const oneStorePathFinal = path.join(pathValue, 'Official', 'OneStore');
+          
+          switch(sim){
+            case Simulators.Msfs2020:
+              const steamPathFinal = path.join(pathValue, 'Official', 'Steam');
+              const oneStorePathFinal = path.join(pathValue, 'Official', 'OneStore');
 
-          if (fs.existsSync(steamPathFinal)) {
-            resolve(steamPathFinal);
-          }
+              if (fs.existsSync(steamPathFinal)) {
+                resolve(steamPathFinal);
+              }
 
-          if (fs.existsSync(oneStorePathFinal)) {
-            resolve(oneStorePathFinal);
+              if (fs.existsSync(oneStorePathFinal)) {
+                resolve(oneStorePathFinal);
+              }
+              
+              break;
+            case Simulators.Msfs2024:
+              const msfs2020steamPathFinal = path.join(pathValue, 'Official2020', 'Steam');
+              const msfs2020oneStorePathFinal = path.join(pathValue, 'Official2020', 'OneStore');
+              const msfs2024steamPathFinal = path.join(pathValue, 'Official2024', 'Steam');
+              const msfs2024oneStorePathFinal = path.join(pathValue, 'Official2024', 'OneStore');
+              // Actually there is no benefit to search StreamedPackages
+              // const streamedPackagesPathFinal = path.join(pathValue, 'StreamedPackages');
+
+              if (fs.existsSync(msfs2020steamPathFinal)) {
+                resolve(msfs2020steamPathFinal);
+              }
+
+              if (fs.existsSync(msfs2020oneStorePathFinal)) {
+                resolve(msfs2020oneStorePathFinal);
+              }
+
+              if (fs.existsSync(msfs2024steamPathFinal)) {
+                resolve(msfs2024steamPathFinal);
+              }
+
+              if (fs.existsSync(msfs2024oneStorePathFinal)) {
+                resolve(msfs2024oneStorePathFinal);
+              }
+              break;
+            default:
+              break;
           }
         }
-
         reject('InstalledPackagesPath not found.');
       });
     });
-  }
-  
-  static inCommunityLocation(targetDir: string): string {
-    return path.join(Directories.communityLocation(), this.sanitize(targetDir));
-  }
-
-  static inCommunityPackage(addon: Addon, targetDir: string): string {
-    const baseDir = this.inCommunityLocation(this.sanitize(addon.targetDirectory));
-    return path.join(baseDir, this.sanitize(targetDir));
-  }
-
-  static installLocation(): string {
-    return settings.get('mainSettings.installPath') as string;
-  }
-
-  static inInstallLocation(targetDir: string): string {
-    return path.join(Directories.installLocation(), this.sanitize(targetDir));
-  }
-
-  static inInstallPackage(addon: Addon, targetDir: string): string {
-    const baseDir = this.inInstallLocation(this.sanitize(addon.targetDirectory));
-    return path.join(baseDir, this.sanitize(targetDir));
-  }
-
-  static tempLocation(): string {
-    return settings.get('mainSettings.separateTempLocation')
-      ? (settings.get('mainSettings.tempLocation') as string)
-      : (settings.get('mainSettings.installPath') as string);
-  }
-
-  static inTempLocation(targetDir: string): string {
-    return path.join(Directories.tempLocation(), this.sanitize(targetDir));
-  }
-
-  static inPackages(targetDir: string): string {
-    return path.join(this.msfsBasePath(), 'packages', this.sanitize(targetDir)).replace('LocalCache', 'LocalState');
-  }
-
-  static inPackageCache(addon: Addon, targetDir: string): string {
-    const baseDir = this.inPackages(this.sanitize(addon.targetDirectory));
-
-    return path.join(baseDir, this.sanitize(targetDir));
-  }
-
-  static temp(): string {
-    const dir = path.join(Directories.tempLocation(), `${TEMP_DIRECTORY_PREFIX}-${(Math.random() * 1000).toFixed(0)}`);
-    if (fs.existsSync(dir)) {
-      return Directories.temp();
-    }
-    return dir;
   }
 
   static removeAllTemp(): void {
     console.log('[CLEANUP] Removing all temp directories');
 
-    if (!fs.existsSync(Directories.tempLocation())) {
-      console.warn('[CLEANUP] Location of temporary folders does not exist. Aborting');
-      return;
-    }
-
-    try {
-      const dirents = fs
-        .readdirSync(Directories.tempLocation(), { withFileTypes: true })
-        .filter((dirEnt) => dirEnt.isDirectory())
-        .filter((dirEnt) => TEMP_DIRECTORY_PREFIXES_FOR_CLEANUP.some((it) => dirEnt.name.startsWith(it)));
-
-      for (const dir of dirents) {
-        const fullPath = Directories.inTempLocation(dir.name);
-
-        console.log('[CLEANUP] Removing', fullPath);
-        try {
-          fs.rmSync(fullPath, { recursive: true });
-          console.log('[CLEANUP] Removed', fullPath);
-        } catch (e) {
-          console.error('[CLEANUP] Could not remove', fullPath, e);
-        }
+    for (const sim in Simulators) {
+      if (!fs.existsSync(Directories.tempLocation(sim as TypeOfSimulator))) {
+        console.warn('[CLEANUP] Location of temporary folders does not exist. Aborting');
+        return;
       }
 
-      console.log('[CLEANUP] Finished removing all temp directories');
-    } catch (e) {
-      console.error('[CLEANUP] Could not scan folder', Directories.tempLocation(), e);
+      try {
+        const dirents = fs
+          .readdirSync(Directories.tempLocation(sim as TypeOfSimulator), { withFileTypes: true })
+          .filter((dirEnt) => dirEnt.isDirectory())
+          .filter((dirEnt) => TEMP_DIRECTORY_PREFIXES_FOR_CLEANUP.some((it) => dirEnt.name.startsWith(it)));
+
+        for (const dir of dirents) {
+          const fullPath = Directories.inTempLocation(sim as TypeOfSimulator, dir.name);
+
+          console.log('[CLEANUP] Removing', fullPath);
+          try {
+            fs.rmSync(fullPath, { recursive: true });
+            console.log('[CLEANUP] Removed', fullPath);
+          } catch (e) {
+            console.error('[CLEANUP] Could not remove', fullPath, e);
+          }
+        }
+
+        console.log('[CLEANUP] Finished removing all temp directories');
+      } catch (e) {
+        console.error('[CLEANUP] Could not scan folder', Directories.tempLocation(sim as TypeOfSimulator), e);
+      }
     }
   }
 
   static removeAlternativesForAddon(addon: Addon): void {
     addon.alternativeNames?.forEach((altName) => {
-      const altDir = Directories.inInstallLocation(altName);
+      const altDir = Directories.inInstallLocation(addon.simulator, altName);
 
       if (fs.existsSync(altDir)) {
         console.log('Removing alternative', altDir);
@@ -158,13 +207,15 @@ export class Directories {
   }
 
   static isFragmenterInstall(target: string | Addon): boolean {
-    const targetDir = typeof target === 'string' ? target : Directories.inInstallLocation(target.targetDirectory);
+    const targetDir =
+      typeof target === 'string' ? target : Directories.inInstallLocation(target.simulator, target.targetDirectory);
 
     return fs.existsSync(path.join(targetDir, 'install.json'));
   }
 
   static isGitInstall(target: string | Addon): boolean {
-    const targetDir = typeof target === 'string' ? target : Directories.inInstallLocation(target.targetDirectory);
+    const targetDir =
+      typeof target === 'string' ? target : Directories.inInstallLocation(target.simulator, target.targetDirectory);
 
     try {
       const symlinkPath = fs.readlinkSync(targetDir);

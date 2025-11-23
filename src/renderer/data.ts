@@ -30,6 +30,11 @@ export const defaultConfiguration: Configuration = {
         },
         {
           kind: 'addonCategory',
+          key: 'tools',
+          title: 'Tools',
+        },
+        {
+          kind: 'addonCategory',
           key: 'livery',
           title: 'Livery',
         },
@@ -66,11 +71,21 @@ export const defaultConfiguration: Configuration = {
           detectionType: 'tcp',
           port: 500,
         },
+        {
+          kind: 'externalApp',
+          key: 'simlink-app',
+          prettyName: 'SimLink',
+          detectionType: 'http',
+          url: 'http://localhost:8339/health',
+          killUrl: 'http://localhost:8339/kill',
+          killMethod: 'GET',
+        },
       ],
       addons: [
         {
-          name: 'A339X',
-          key: 'a339x',
+          key: 'a339x-msfs2020',
+          name: 'a339x',          
+          simulator: 'msfs2020',
           repoOwner: 'headwindsim',
           repoName: 'aircraft',
           category: '@airbus',
@@ -134,7 +149,17 @@ export const defaultConfiguration: Configuration = {
           ],
           dependencies: [
             {
-              addon: '@headwindsim/simbridge',
+              addon: 'Asobo Studio/787-10 Dreamliner',
+              optional: false,
+              modalText: 'To install the Horizon Simulations Boeing 787-9 Add-On, you MUST have the Asobo Studio 787-10 Dreamliner (Included in MSFS Premium Deluxe) installed. This Horizon Simulations add-on will NOT work standalone and is dependent on the core assets and modules provided by the Asobo Studios package. Ensure you have a legitimate and fully functional copy of the Asobo Studio 787-10 Dreamliner before proceeding with the installation to avoid any issues or conflicts.',
+            },
+            {
+              addon: '@headwindsim/simlink-msfs2020',
+              optional: true,
+              modalText: 'SimLink enhances Headwind Simulation aircraft by integrating external data, extending simulator capabilities for improved ATSAW functionality.',
+            },
+            {
+              addon: '@headwindsim/simbridge-msfs2020',
               optional: true,
               modalText: 'SimBridge allows the A339X to expose remote tools like the Web MCDU, as well as use the external terrain database.',
             },
@@ -163,8 +188,109 @@ export const defaultConfiguration: Configuration = {
           disallowedRunningExternalApps: ['@/msfs', '@/mcdu-server'],
         },
         {
+          key: 'a339x-msfs2024',
+          name: 'a339x',
+          simulator: 'msfs2024',
+          repoOwner: 'headwindsim',
+          repoName: 'aircraft',
+          category: '@airbus',
+          aircraftName: 'A330-900neo Series',
+          titleImageUrl: 'https://raw.githubusercontent.com/headwindsim/branding/main/logos/A339X-Dark.svg',
+          titleImageUrlSelected: 'https://raw.githubusercontent.com/headwindsim/branding/main/logos/A339X-Light.svg',
+          enabled: true,
+          backgroundImageUrls: ['https://raw.githubusercontent.com/headwindsim/branding/main/images/A339X/installer_bg_3.png'],
+          shortDescription: 'Airbus A330-900 Series',
+          description: 'The Airbus A330neo is a wide-body airliner developed by Airbus from the Airbus A330. The A330neo has 260 and 300 seats in a typical three-class layout, or up to 460 in economy class and has a range of 7,200 nautical miles. It is exclusively powered by the Rolls-Royce Trent 7000.',
+          techSpecs: [
+            {
+              name: 'Engines',
+              value: 'Rolls-Royce Trent 7000',
+            },
+            {
+              name: 'APU',
+              value: 'APS3200',
+            },
+          ],
+          targetDirectory: 'headwindsim-aircraft-a330-900',
+          alternativeNames: [
+            'headwind-aircraft-a330-900',
+            'A339X',
+            'a339x',
+          ],
+          tracks: [
+            {
+              name: 'Release',
+              key: 'a339x-stable',
+              url: 'https://cdn.headwindsim.net/addons/a339x/release',
+              alternativeUrls: [
+                'external/a339x/stable',
+              ],
+              description: 'Stable is our variant that has the least bugs and best performance. ' +
+                'This version will not always be up to date but we guarantee its compatibility ' +
+                'with each major patch from MSFS.' +
+                '\n\n**SimBrief Airframes for Stable**'+
+                '\n\nAirframe for: [A330-900](https://dispatch.simbrief.com/airframes/share/352855_1683790837790)'+
+                '\n\nAirframe for: [ACJ330-900](https://dispatch.simbrief.com/airframes/share/352855_1683790837791)',
+              isExperimental: false,
+              releaseModel: {
+                type: 'fragmenter',
+              },
+            },
+            {
+              name: 'Pre-Release',
+              key: 'a339x-prerelease',
+              url: 'https://cdn.headwindsim.net/addons/a339x/staging',
+              description: 'This is a pre-release version of our Addon used for public testing before the official launch. ' +
+                'You can choose between the stable build, which is the final version, or the prerelease build, which may have some bugs ' +
+                'or incomplete features but is useful for testing and providing feedback to our developers.' +
+                '\n\n**SimBrief Airframes for Pre-Release**'+
+                '\n\nAirframe for: [A330-900](https://dispatch.simbrief.com/airframes/share/352855_1683790837790)'+
+                '\n\nAirframe for: [ACJ330-900](https://dispatch.simbrief.com/airframes/share/352855_1683790837791)',
+              isExperimental: false,
+              releaseModel: {
+                type: 'fragmenter',
+              },
+            }
+          ],
+          dependencies: [
+            {
+              addon: 'Asobo Studio/787-10 Dreamliner',
+              optional: false,
+              modalText: 'To install the Horizon Simulations Boeing 787-9 Add-On, you MUST have the Asobo Studio 787-10 Dreamliner (Included in MSFS Premium Deluxe) installed. This Horizon Simulations add-on will NOT work standalone and is dependent on the core assets and modules provided by the Asobo Studios package. Ensure you have a legitimate and fully functional copy of the Asobo Studio 787-10 Dreamliner before proceeding with the installation to avoid any issues or conflicts.',
+            },
+            {
+              addon: '@headwindsim/simbridge-msfs2024',
+              optional: true,
+              modalText: 'SimBridge allows the A339X to expose remote tools like the Web MCDU, as well as use the external terrain database.',
+            },
+          ],
+          myInstallPage: {
+            links: [
+              {
+                url: 'https://docs.flybywiresim.com/fbw-a32nx/',
+                title: 'Documentation',
+              },
+              {
+                url: 'https://flightsim.to/add-ons/airbus-a330-900',
+                title: 'Add-Ons',
+              },
+            ],
+            directories: [
+              {
+                location: {
+                  in: 'packageCache',
+                  path: 'work',
+                },
+                title: 'Work Folder',
+              },
+            ],
+          },
+          disallowedRunningExternalApps: ['@/msfs', '@/mcdu-server'],
+        },
+        {
+          key: 'su95x-msfs2020',
           name: 'SU95X',
-          key: 'su95x',
+          simulator: 'msfs2020',
           repoOwner: 'headwindsim',
           repoName: 'aircraft',
           category: '@sukhoi',
@@ -221,7 +347,7 @@ export const defaultConfiguration: Configuration = {
           ],
           dependencies: [
             {
-              addon: '@headwindsim/simbridge',
+              addon: '@headwindsim/simbridge-msfs2020',
               optional: true,
               modalText: 'SimBridge allows the SU95X to expose remote tools like the Web MCDU, as well as use the external terrain database.',
             },
@@ -250,116 +376,65 @@ export const defaultConfiguration: Configuration = {
           disallowedRunningExternalApps: ['@/msfs', '@/mcdu-server'],
         },
         {
-          key: 'a339x-livery',
-          name: 'A339X Livery Package',
+          key: 'simlink-msfs2020',
+          name: 'SimLink',
+          simulator: 'msfs2020',
+          category: '@tools',
           repoOwner: 'headwindsim',
-          repoName: 'aircraft',
-          category: '@livery',
-          aircraftName: 'A339X',
-          titleImageUrl: 'https://raw.githubusercontent.com/headwindsim/branding/main/logos/Livery-Package-Dark.svg',
-          titleImageUrlSelected: 'https://raw.githubusercontent.com/headwindsim/branding/main/logos/Livery-Package-Light.svg',
+          repoName: 'simlink',
+          aircraftName: 'HDW SimLink',
+          titleImageUrl: 'https://raw.githubusercontent.com/headwindsim/branding/main/logos/addons/SimLink-Dark.svg',
+          titleImageUrlSelected: 'https://raw.githubusercontent.com/headwindsim/branding/main/logos/addons/SimLink-Light.svg',
           enabled: true,
-          backgroundImageUrls: ['https://raw.githubusercontent.com/headwindsim/branding/main/images/A339X/livery_package_1.png'],
-          shortDescription: 'A339X Livery Package',
-          description: 'This package includes liveries for AirBelgium, Condor (Beach, Island, and Sea variants), Corsair, Delta, Hifly, and TAP (Air Portugal and STAR Alliance variants), all carefully designed to match the real-life paint schemes of these airlines. Whether you\'re looking to simulate a transatlantic flight with Delta, a tropical getaway with Corsair, or a business trip with TAP, our liveries will help you fully immerse in your simulation experience.',
-          targetDirectory: 'headwindsim-a339x-livery-package',
-          alternativeNames: [],
+          backgroundImageUrls: [
+            'https://raw.githubusercontent.com/headwindsim/branding/main/images/SimLink/background.jpg',
+          ],
+          backgroundImageShadow: false,
+          shortDescription: 'HDW SimLink',
+          description: 'SimLink is an external application designed to seamlessly integrate with Headwind Simulation aircraft, offering a richer and more realistic in-sim environment. By supplying data from external, it extends your simulator’s capabilities beyond its native limits, enabling enhanced ATSAW (Airborne Traffic Situational Awareness) functionality.',
+          targetDirectory: 'hdw-externaltools-simlink',
           tracks: [
             {
               name: 'Release',
-              key: 'a339x-livery-release',
-              url: 'https://cdn.headwindsim.net/addons/a339x-livery-package/release',
-              description: 'This package includes liveries for AirBelgium, Condor (Beach, Island, and Sea variants), Corsair, Delta, Hifly, and TAP (Air Portugal and STAR Alliance variants), all carefully designed to match the real-life paint schemes of these airlines. Whether you\'re looking to simulate a transatlantic flight with Delta, a tropical getaway with Corsair, or a business trip with TAP, our liveries will help you fully immerse in your simulation experience.',
-              isExperimental: false,
+              key: 'release',
               releaseModel: {
-                type: 'fragmenter',
-              }
-            }
-          ],
-          dependencies: [
+                type: 'fragmenter'
+              },
+              url: 'https://cdn.headwindsim.net/addons/simlink/release/',
+              isExperimental: false,
+              description:
+                '<span style="color: rgb(255, 106, 0);">&#9888; Important: SimLink will auto-start with the Launch of Microsoft Flight Simulator, there is no need for running it manually.</span> \n\nSimLink is an external application designed to seamlessly integrate with Headwind Simulation aircraft, offering a richer and more realistic in-sim environment. By supplying data from external, it extends your simulator’s capabilities beyond its native limits, enabling enhanced ATSAW (Airborne Traffic Situational Awareness) functionality.',
+            },
             {
-              addon: '@headwindsim/a339x',
-              optional: false,
-              modalText: 'Will need base package to be working.',
+              name: 'Development',
+              key: 'development',
+              releaseModel: {
+                type: 'fragmenter'
+              },
+              url: 'https://cdn.headwindsim.net/addons/simlink/development/',
+              isExperimental: true,
+              warningContent: '**Placeholder**',
+              description:
+                '<span style="color: rgb(255, 106, 0);">&#9888; Important: SimLink will auto-start with the Launch of Microsoft Flight Simulator, there is no need for running it manually.</span> \n\nSimLink is an external application designed to seamlessly integrate with Headwind Simulation aircraft, offering a richer and more realistic in-sim environment. By supplying data from external, it extends your simulator’s capabilities beyond its native limits, enabling enhanced ATSAW (Airborne Traffic Situational Awareness) functionality.',
             },
           ],
-          incompatibleAddons: [],
+          disallowedRunningExternalApps: ['@/simlink-app'],
+          backgroundService: {
+            executableFileBasename: 'simlink',
+            runCheckExternalAppRef: '@/simlink-app',
+            enableAutostartConfiguration: false,
+            simulatorAutoStart: true
+          },
           myInstallPage: {
-            links: [
-              {
-                url: 'https://flightsim.to/add-ons/airbus-a330-900',
-                title: 'Add-Ons',
-              }
-            ],
+            links: [],
             directories: [
-              {
-                location: {
-                  in: 'package',
-                  path: 'resources',
-                },
-                title: 'Resources',
-              },
             ],
           },
-          disallowedRunningExternalApps: ['@/msfs'],
         },
         {
-          key: 'su95x-livery',
-          name: 'SU95X Livery Package',
-          repoOwner: 'headwindsim',
-          repoName: 'aircraft',
-          category: '@livery',
-          aircraftName: 'SU95X',
-          titleImageUrl: 'https://raw.githubusercontent.com/headwindsim/branding/main/logos/Livery-Package-Dark.svg',
-          titleImageUrlSelected: 'https://raw.githubusercontent.com/headwindsim/branding/main/logos/Livery-Package-Light.svg',
-          enabled: true,
-          backgroundImageUrls: ['https://raw.githubusercontent.com/headwindsim/branding/main/images/SU95X/livery_package.png'],
-          shortDescription: 'SU95X Livery Package',
-          description: 'This package includes liveries for Aeroflot, Armavia, Azimuth, Interjet, RedWings and Yakutia, all carefully designed to match the real-life paint schemes of these airlines.',
-          targetDirectory: 'headwindsim-su95x-livery-package',
-          alternativeNames: [],
-          tracks: [
-            {
-              name: 'Release',
-              key: 'su95x-livery-release',
-              url: 'https://cdn.headwindsim.net/addons/su95x-livery-package/release',
-              description: 'This package includes liveries for Aeroflot, Armavia, Azimuth, Interjet, RedWings and Yakutia, all carefully designed to match the real-life paint schemes of these airlines.',
-              isExperimental: false,
-              releaseModel: {
-                type: 'fragmenter',
-              },
-            }
-          ],
-          dependencies: [
-            {
-              addon: '@headwindsim/su95x',
-              optional: false,
-              modalText: 'Will need base package to be working.',
-            },
-          ],
-          incompatibleAddons: [],
-          myInstallPage: {
-            links: [
-              {
-                url: 'https://flightsim.to/add-ons/sukhoi-superjet-100/',
-                title: 'Add-Ons',
-              }
-            ],
-            directories: [
-              {
-                location: {
-                  in: 'package',
-                  path: 'resources',
-                },
-                title: 'Resources',
-              },
-            ],
-          },
-          disallowedRunningExternalApps: ['@/msfs'],
-        },
-        {
+          key: 'simbridge-msfs2020',
           name: 'SimBridge',
-          key: 'simbridge',
+          simulator: 'msfs2020',
           category: '@simbridge',
           repoOwner: 'flybywiresim',
           repoName: 'simbridge',

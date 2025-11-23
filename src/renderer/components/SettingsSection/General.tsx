@@ -2,7 +2,6 @@ import React, { FC } from 'react';
 import settings, { useSetting } from 'renderer/rendererSettings';
 import { ipcRenderer } from 'electron';
 import { Toggle } from '../Toggle';
-import {setupMsfsBasePath} from "renderer/actions/install-path.utils";
 
 interface PathSettingItemProps extends SettingItemProps<string> {
   name: string;
@@ -42,10 +41,6 @@ interface SettingItemProps<T> {
   value: T;
   setValue: (value: T) => void;
 }
-
-const MsfsBaseSettingItem = ({ value, setValue }: SettingItemProps<string>): JSX.Element => (
-    <PathSettingItem value={value} setValue={setValue} name="MSFS Base Path" callback={setupMsfsBasePath} />
-);
 
 const AutoStartSettingItem = ({ value, setValue }: SettingItemProps<boolean>) => {
   const handleClick = () => {
@@ -106,9 +101,8 @@ export const GeneralSettings = (): JSX.Element => {
   return (
     <div>
       <div className="flex flex-col">
-        <h2 className="text-white">General Settings</h2>
+        <h2 className="font-manrope font-bold text-white">General Settings</h2>
         <div className="flex flex-col divide-y divide-gray-600">
-          <MsfsBaseSettingItem value={basePath} setValue={setBasePath} />
           <AutoStartSettingItem value={autoStart} setValue={setAutoStart} />
           <DateLayoutItem value={dateLayout} setValue={setDateLayout} />
           <LongDateFormatItem value={useLongDate} setValue={setUseLongDate} />
