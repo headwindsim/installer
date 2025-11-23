@@ -9,6 +9,11 @@
 
 
 releases:
+  - name: 2.0.0
+    changes:
+      - title: Add multi-simulator support (MSFS2020 and MSFS2024)
+        categories: [Core]
+        authors: [FoxtrotSierra]
   - name: 1.6.2
     changes:
     - title: Fix Parsing of EXE.xml
