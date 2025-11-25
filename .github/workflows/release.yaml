@@ -64,4 +64,4 @@ jobs:
           CLOUDFLARE_WORKER_PASSWORD: ${{ secrets.CLOUDFLARE_WORKER_PASSWORD }}
           CLOUDFLARE_CDN_ZONE_ID: ${{ secrets.CLOUDFLARE_CDN_ZONE_ID }}
           CLOUDFLARE_PURGE_TOKEN: ${{ secrets.CLOUDFLARE_PURGE_TOKEN }}
-        run: ./scripts/cdn-cf.sh installer/release ./dist && ./scripts/cdn-cf.sh installer/rc ./dist
+        run: ./scripts/cdn-cf.sh dist/ installer/release && ./scripts/cdn-cf.sh dist/ installer/rc
