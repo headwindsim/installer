@@ -9,6 +9,11 @@
 
 
 releases:
+  - name: 2.0.2
+    changes:
+      - title: Fix recursive disk reads causing high CPU & RAM usage
+        categories: [Core]
+        authors: [vikingnope, dronesimyt]
   - name: 2.0.1
     changes:
       - title: Fix missing settings button for Simbridge
